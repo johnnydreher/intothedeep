@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class Drivetrain {
@@ -24,7 +22,7 @@ public class Drivetrain {
     static double wheelPerimeter = wheelDiameter * Math.PI;
     static double distancePerTick = wheelPerimeter/pulsePerRevolution;
 
-    private BNO055IMU imu;
+    private IMU imu         = null;      // Control/Expansion Hub IMU
 
     public void init(HardwareMap ahwMap) {
 
@@ -42,14 +40,18 @@ public class Drivetrain {
         bottomLeftDriveMotor = hwMap.get(DcMotor.class, "LB");
         topRightDriveMotor = hwMap.get(DcMotor.class, "RF");
         bottomRightDriveMotor = hwMap.get(DcMotor.class, "RB");
-        encoderHorizontal = hwMap.get(DcMotor.class, "EncoderHorizontal");
-        encoderVertical = hwMap.get(DcMotor.class, "EncoderVertical");
+        encoderHorizontal = hwMap.get(DcMotor.class, "EH");
+        encoderVertical = hwMap.get(DcMotor.class, "EV");
 
-        imu = ahwMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        imu.initialize(parameters);
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // This sample expects the IMU to be in a REV Hub and named "imu".
+        imu = hwMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
         /**
          * Allow the 4 wheel motors to be run without encoders since we are doing a time based autonomous
          * **/
@@ -127,13 +129,14 @@ public class Drivetrain {
         return encoderHorizontal.getCurrentPosition()*distancePerTick;
     }
     public double getHeading(){
-        return imu.getAngularOrientation().firstAngle;
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
     public void resetEncoders(){
         encoderVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoderHorizontal.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoderVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         encoderHorizontal.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        imu.resetYaw();
 
 
     }

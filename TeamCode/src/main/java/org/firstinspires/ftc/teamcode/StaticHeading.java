@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,10 +11,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Commands.driveTo;
+import org.firstinspires.ftc.teamcode.Commands.strafeTo;
+import org.firstinspires.ftc.teamcode.Commands.turnTo;
+import org.firstinspires.ftc.teamcode.Constants.DistanceConstant;
+import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvWebcam;
@@ -52,68 +58,57 @@ public class StaticHeading extends LinearOpMode {
         ElapsedTime stopTime   = new ElapsedTime();  // Use for timeouts.
 
         waitForStart();
-        driveTo drive = new driveTo(DistanceConstant.distanceX,drivetrain);
+        /*driveTo drive = new driveTo(DistanceConstant.distanceX,drivetrain);
         while(!drive.update()){
-            telemetry.addData("Function","drive");
-            telemetry.addData("Horizontal",drivetrain.getHorizontal());
-            telemetry.addData("Vertical",drivetrain.getVertical());
-            telemetry.addData("Gyro",drivetrain.getHeading());
-            telemetry.update();
+            updateTelemetry("Drive");
         }
         drivetrain.power(0);
         strafeTo strafe = new strafeTo(DistanceConstant.distanceY,drivetrain);
         while(!strafe.update()){
-            telemetry.addData("Function","strafe");
-
-            telemetry.addData("Horizontal",drivetrain.getHorizontal());
-            telemetry.addData("Vertical",drivetrain.getVertical());
-            telemetry.addData("Gyro",drivetrain.getHeading());
-            telemetry.update();
+            updateTelemetry("Strafe");
         }
         drivetrain.power(0);
         turnTo turn = new turnTo(DistanceConstant.angle,drivetrain);
         while(!turn.update()){
-            telemetry.addData("Function","turn");
-
-            telemetry.addData("Horizontal",drivetrain.getHorizontal());
-            telemetry.addData("Vertical",drivetrain.getVertical());
-            telemetry.addData("Gyro",drivetrain.getHeading());
-            telemetry.update();
-        }
+            updateTelemetry("turn");
+        }*/
 
         drivetrain.power(0);
         while(opModeIsActive()){
-            telemetry.addData("Function","end");
 
-            telemetry.addData("Horizontal",drivetrain.getHorizontal());
-            telemetry.addData("Vertical",drivetrain.getVertical());
-            telemetry.addData("Gyro",drivetrain.getHeading());
-            telemetry.update();
-
+            updateTelemetry("End");
 
 
         }
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
     }
+    private void updateTelemetry(String function){
+        telemetryAprilTag();
+        telemetry.addData("Function",function);
 
+        telemetry.addData("Horizontal",drivetrain.getHorizontal());
+        telemetry.addData("Vertical",drivetrain.getVertical());
+        telemetry.addData("Gyro",drivetrain.getHeading());
+        telemetry.update();
+    }
     private void initAprilTag() {
 
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
 
                 // The following default settings are available to un-comment and edit as needed.
-                //.setDrawAxes(false)
-                //.setDrawCubeProjection(false)
-                //.setDrawTagOutline(true)
-                //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .setDrawAxes(false)
+                .setDrawCubeProjection(false)
+                .setDrawTagOutline(true)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
                 // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                .setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
                 // ... these parameters are fx, fy, cx, cy.
 
                 .build();
@@ -125,7 +120,7 @@ public class StaticHeading extends LinearOpMode {
         // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second (default)
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second (default)
         // Note: Decimation can be changed on-the-fly to adapt during a match.
-        //aprilTag.setDecimation(3);
+        aprilTag.setDecimation(3);
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -142,18 +137,18 @@ public class StaticHeading extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(640, 480));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
+        builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
         // Choose whether or not LiveView stops if no processors are enabled.
         // If set "true", monitor shows solid orange screen if no processors enabled.
         // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
+        builder.setAutoStopLiveView(false);
 
         // Set and enable the processor.
         builder.addProcessor(aprilTag);
@@ -162,7 +157,7 @@ public class StaticHeading extends LinearOpMode {
         visionPortal = builder.build();
 
         // Disable or re-enable the aprilTag processor at any time.
-        //visionPortal.setProcessorEnabled(aprilTag, true);
+        visionPortal.setProcessorEnabled(aprilTag, true);
 
     }   // end method initAprilTag()
 
@@ -179,9 +174,9 @@ public class StaticHeading extends LinearOpMode {
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
