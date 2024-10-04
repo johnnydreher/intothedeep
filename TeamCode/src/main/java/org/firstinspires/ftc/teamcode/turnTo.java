@@ -1,8 +1,4 @@
-package org.firstinspires.ftc.teamcode.Commands;
-
-import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
-import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.Utils.PIDControl;
+package org.firstinspires.ftc.teamcode;
 
 public class turnTo {
     Drivetrain drive;
@@ -11,7 +7,7 @@ public class turnTo {
     public turnTo(double angle, Drivetrain drive){
         this.angle = angle;
         this.drive = drive;
-        pid = new PIDControl(angle, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
+        pid = new PIDControl(angle,PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
         drive.resetEncoders();
     }
     public boolean update(){
