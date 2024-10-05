@@ -4,7 +4,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 
 public class Drive {
-    private Drivetrain dt;
+    private final Drivetrain dt;
     public Drive(Drivetrain dt){
         this.dt = dt;
     }

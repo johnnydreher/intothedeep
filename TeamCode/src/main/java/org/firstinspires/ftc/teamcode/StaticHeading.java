@@ -70,7 +70,7 @@ public class StaticHeading extends LinearOpMode {
 
         telemetry.addData("Horizontal",drivetrain.getHorizontal());
         telemetry.addData("Vertical",drivetrain.getVertical());
-        telemetry.addData("Gyro",drivetrain.getHeading());
+        telemetry.addData("Gyro",drivetrain.getHeading(AngleUnit.DEGREES));
         telemetry.update();
     }
     private void initAprilTag() {
