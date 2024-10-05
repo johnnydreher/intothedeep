@@ -30,7 +30,7 @@ import java.util.List;
 public class StaticHeading extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
+    private static  final double cameraCorrection = 1.27;
     /**
      * The variable to store our instance of the AprilTag processor.
      */
@@ -49,9 +49,7 @@ public class StaticHeading extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap);
-        /*int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvWebcam camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        FtcDashboard.getInstance().startCameraStream(camera, 0);*/
+
 
 
         initAprilTag();
@@ -103,12 +101,12 @@ public class StaticHeading extends LinearOpMode {
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
+                .setOutputUnits(DistanceUnit.MM, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
                 // If you do not manually specify calibration parameters, the SDK will attempt
                 // to load a predefined calibration for your camera.
-                .setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
+                .setLensIntrinsics(706.965424613, 706.965424613, 316.107943962  , 246.246519532)
                 // ... these parameters are fx, fy, cx, cy.
 
                 .build();
@@ -174,9 +172,9 @@ public class StaticHeading extends LinearOpMode {
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (mm)", detection.ftcPose.x*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.y*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.z*DistanceUnit.mmPerInch*cameraCorrection));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (mm, deg, deg)", detection.ftcPose.range*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.bearing, detection.ftcPose.elevation));
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
