@@ -33,7 +33,7 @@ public class Teleop extends LinearOpMode
     {
         // Initialize the drive hardware & Turn on telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        drivetrain.init(hardwareMap);
+        drivetrain.init(hardwareMap,false);
         // Wait for driver to press start
         while(opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
@@ -47,9 +47,9 @@ public class Teleop extends LinearOpMode
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
-            boolean fieldRelative = !gamepad1.cross;
+            boolean fieldRelative = !gamepad1.a;
            drive.drive(y,x,rx,fieldRelative);
-           if(gamepad1.circle){
+           if(gamepad1.b){
                drivetrain.resetEncoders();
            }
         }

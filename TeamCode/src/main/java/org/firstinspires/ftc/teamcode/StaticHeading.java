@@ -23,7 +23,7 @@ public class StaticHeading extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        drivetrain.init(hardwareMap);
+        drivetrain.init(hardwareMap,true);
         aprilTag.init(hardwareMap);
 
 

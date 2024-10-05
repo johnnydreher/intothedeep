@@ -7,6 +7,7 @@ public class Drive {
     private final Drivetrain dt;
     public Drive(Drivetrain dt){
         this.dt = dt;
+        dt.resetEncoders();
     }
     public void drive(double y, double x, double rx, boolean fieldRelative){
 
