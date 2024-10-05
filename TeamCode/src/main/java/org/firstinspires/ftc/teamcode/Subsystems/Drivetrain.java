@@ -104,6 +104,12 @@ public class Drivetrain {
         rightFrontDrive.setPower(output);
         rightBackDrive.setPower(output);
     }
+    public void power(double lf, double lb, double rf, double rb){
+        leftFrontDrive.setPower(lf);
+        leftBackDrive.setPower(lb);
+        rightFrontDrive.setPower(rf);
+        rightBackDrive.setPower(rb);
+    }
     public void moveRobot(double drive, double strafe, double yaw){
         /**
          * Wheel powers calculated using gamepad 1's inputs leftStickY, leftStickX, and rightStickX
@@ -137,8 +143,8 @@ public class Drivetrain {
     public double getHorizontal(){
         return encoderHorizontal.getCurrentPosition()*distancePerTick;
     }
-    public double getHeading(){
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    public double getHeading(AngleUnit unit){
+        return imu.getRobotYawPitchRollAngles().getYaw(unit);
     }
     public void resetEncoders(){
         encoderVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

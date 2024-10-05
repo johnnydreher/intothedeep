@@ -4,20 +4,19 @@ import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 
-public class turnTo {
+public class DriveTo {
     Drivetrain drive;
     PIDControl pid;
-    double angle;
-    public turnTo(double angle, Drivetrain drive){
-        this.angle = angle;
+    double distance;
+    public DriveTo(double distance, Drivetrain drive){
+        this.distance = distance;
         this.drive = drive;
-        pid = new PIDControl(angle, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
+        pid = new PIDControl(distance, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
         drive.resetEncoders();
     }
     public boolean update(){
-        double out = pid.get(drive.getHeading());
-        drive.moveRobot(0,0,-out);
+        double out = pid.get(drive.getVertical());
+        drive.moveRobot(out,0,0);
         return pid.atSetpoint();
     }
 }
-
