@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,13 +12,12 @@ import org.firstinspires.ftc.teamcode.Subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 
 
-@TeleOp(name = "Static Heading")
+@Autonomous(name = "Static Heading")
 public class StaticHeading extends LinearOpMode {
 
 
     Drivetrain drivetrain = new Drivetrain();
 
-    ElapsedTime timer = new ElapsedTime();
     AprilTag aprilTag = new AprilTag();
 
     @Override
@@ -26,7 +26,6 @@ public class StaticHeading extends LinearOpMode {
         drivetrain.init(hardwareMap);
         aprilTag.init(hardwareMap);
 
-        ElapsedTime stopTime   = new ElapsedTime();  // Use for timeouts.
 
         waitForStart();
 
