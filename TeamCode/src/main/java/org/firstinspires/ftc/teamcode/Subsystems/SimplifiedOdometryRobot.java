@@ -4,7 +4,7 @@
     See the readme for a link to a video tutorial explaining the operation and limitations of the code.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -94,8 +94,8 @@ public class SimplifiedOdometryRobot {
         imu = myOpMode.hardwareMap.get(IMU.class, "imu");
 
         //  Connect to the encoder channels using the name of that channel.
-        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class, "EncoderVertical");
-        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class, "EncoderHorizontal");
+        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class, "EV");
+        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class, "EH");
 
         // Set all hubs to use the AUTO Bulk Caching mode for faster encoder reads
         List<LynxModule> allHubs = myOpMode.hardwareMap.getAll(LynxModule.class);

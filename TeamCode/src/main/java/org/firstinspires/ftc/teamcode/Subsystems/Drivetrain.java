@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,10 +9,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class Drivetrain {
-    public DcMotor topLeftDriveMotor;
-    public DcMotor bottomLeftDriveMotor;
-    public DcMotor topRightDriveMotor;
-    public DcMotor bottomRightDriveMotor;
+    public DcMotor leftFrontDrive;
+    public DcMotor leftBackDrive;
+    public DcMotor rightFrontDrive;
+    public DcMotor rightBackDrive;
     public DcMotor encoderVertical;
     public DcMotor encoderHorizontal;
     HardwareMap hwMap;
@@ -36,10 +35,10 @@ public class Drivetrain {
          * **/
 
         // Control HUb
-        topLeftDriveMotor = hwMap.get(DcMotor.class, "LF");
-        bottomLeftDriveMotor = hwMap.get(DcMotor.class, "LB");
-        topRightDriveMotor = hwMap.get(DcMotor.class, "RF");
-        bottomRightDriveMotor = hwMap.get(DcMotor.class, "RB");
+        leftFrontDrive = hwMap.get(DcMotor.class, "LF");
+        leftBackDrive = hwMap.get(DcMotor.class, "LB");
+        rightFrontDrive = hwMap.get(DcMotor.class, "RF");
+        rightBackDrive = hwMap.get(DcMotor.class, "RB");
         encoderHorizontal = hwMap.get(DcMotor.class, "EH");
         encoderVertical = hwMap.get(DcMotor.class, "EV");
 
@@ -55,15 +54,15 @@ public class Drivetrain {
         /**
          * Allow the 4 wheel motors to be run without encoders since we are doing a time based autonomous
          * **/
-        topLeftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bottomLeftDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        topRightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bottomRightDriveMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        topLeftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bottomLeftDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        topRightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bottomRightDriveMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         resetEncoders();
 
@@ -72,10 +71,10 @@ public class Drivetrain {
          * **/
 
         //THIS IS THE CORRECT ORIENTATION
-        topLeftDriveMotor.setDirection(DcMotor.Direction.FORWARD);
-        bottomLeftDriveMotor.setDirection(DcMotor.Direction.FORWARD);
-        topRightDriveMotor.setDirection(DcMotor.Direction.REVERSE);
-        bottomRightDriveMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         /**
          * Reverses shooter motor to shoot the correct way and same with the conveyor motor
          * **/
@@ -83,44 +82,54 @@ public class Drivetrain {
         /**
          * We are setting the motor 0 mode power to be brake as it actively stops the robot and doesn't rely on the surface to slow down once the robot power is set to 0
          * **/
-        topLeftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bottomLeftDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        topRightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bottomRightDriveMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         /**
          *The 4 mecanum wheel motors, intake, conveyor, and shooter motor/servo are set to 0 power to keep it from moving when the user presses the INIT button
          * **/
-        topLeftDriveMotor.setPower(0);
-        bottomLeftDriveMotor.setPower(0);
-        topRightDriveMotor.setPower(0);
-        bottomRightDriveMotor.setPower(0);
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
 
     }
 
     public void power(double output){
-        topLeftDriveMotor.setPower(output);
-        bottomLeftDriveMotor.setPower(output);
-        topRightDriveMotor.setPower(output);
-        bottomRightDriveMotor.setPower(output);
+        leftFrontDrive.setPower(output);
+        leftBackDrive.setPower(output);
+        rightFrontDrive.setPower(output);
+        rightBackDrive.setPower(output);
     }
-    public void moveRobot(double leftStickY, double leftStickX, double rightStickX){
+    public void moveRobot(double drive, double strafe, double yaw){
         /**
          * Wheel powers calculated using gamepad 1's inputs leftStickY, leftStickX, and rightStickX
          * **/
-        double topLeftPower = leftStickY + leftStickX + rightStickX;
-        double bottomLeftPower = leftStickY - leftStickX + rightStickX;
-        double topRightPower = leftStickY - leftStickX - rightStickX;
-        double bottomRightPower = leftStickY + leftStickX - rightStickX;
+        double lF = drive - strafe - yaw;
+        double rF = drive + strafe + yaw;
+        double lB = drive + strafe - yaw;
+        double rB = drive - strafe + yaw;
+        double max = Math.max(Math.abs(lF), Math.abs(rF));
+        max = Math.max(max, Math.abs(lB));
+        max = Math.max(max, Math.abs(rB));
 
+        //normalize the motor values
+        if (max > 1.0) {
+            lF /= max;
+            rF /= max;
+            lB /= max;
+            rB /= max;
+        }
         /**
          * Sets the wheel's power
          * **/
-        topLeftDriveMotor.setPower(topLeftPower);
-        topRightDriveMotor.setPower(topRightPower);
-        bottomLeftDriveMotor.setPower(bottomLeftPower);
-        bottomRightDriveMotor.setPower(bottomRightPower);
+        leftFrontDrive.setPower(lF);
+        rightFrontDrive.setPower(rF);
+        leftBackDrive.setPower(lB);
+        rightBackDrive.setPower(rB);
     }
     public double getVertical(){
         return encoderVertical.getCurrentPosition()*distancePerTick;

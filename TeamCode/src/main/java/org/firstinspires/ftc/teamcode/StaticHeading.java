@@ -56,20 +56,7 @@ public class StaticHeading extends LinearOpMode {
         ElapsedTime stopTime   = new ElapsedTime();  // Use for timeouts.
 
         waitForStart();
-        /*driveTo drive = new driveTo(DistanceConstant.distanceX,drivetrain);
-        while(!drive.update()){
-            updateTelemetry("Drive");
-        }
-        drivetrain.power(0);
-        strafeTo strafe = new strafeTo(DistanceConstant.distanceY,drivetrain);
-        while(!strafe.update()){
-            updateTelemetry("Strafe");
-        }
-        drivetrain.power(0);
-        turnTo turn = new turnTo(DistanceConstant.angle,drivetrain);
-        while(!turn.update()){
-            updateTelemetry("turn");
-        }*/
+
 
         drivetrain.power(0);
         while(opModeIsActive()){
