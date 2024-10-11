@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,21 +12,24 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-public class Drivetrain {
-    public DcMotorEx leftFrontDrive;
-    public DcMotorEx leftBackDrive;
-    public DcMotorEx rightFrontDrive;
-    public DcMotorEx rightBackDrive;
-    public DcMotor encoderVertical;
-    public DcMotor encoderHorizontal;
-    HardwareMap hwMap;
-    static double wheelDiameter = 3.5;
-    static int pulsePerRevolution = 8192;
-    static double wheelPerimeter = wheelDiameter * Math.PI;
-    static double distancePerTick = wheelPerimeter/pulsePerRevolution;
-    static VoltageSensor voltage;
-    private IMU imu         = null;      // Control/Expansion Hub IMU
+import com.arcrobotics.ftclib.command.SubsystemBase;
 
+public class Drivetrain extends SubsystemBase {
+
+    private Motor leftFrontDrive;
+    private Motor leftBackDrive;
+    private Motor rightFrontDrive;
+    private Motor rightBackDrive;
+    private DcMotor encoderVertical;
+    private DcMotor encoderHorizontal;
+    private HardwareMap hwMap;
+    private static double wheelDiameter = 3.5;
+    private static int pulsePerRevolution = 8192;
+    private static double wheelPerimeter = wheelDiameter * Math.PI;
+    private static double distancePerTick = wheelPerimeter/pulsePerRevolution;
+    private static VoltageSensor voltage;
+    private IMU imu         = null;      // Control/Expansion Hub IMU
+    private MecanumDrive mecanum =  null;
     public void init(HardwareMap ahwMap, boolean usingEncoderMotor) {
 
         /**
@@ -37,13 +42,14 @@ public class Drivetrain {
          * **/
         voltage = hwMap.voltageSensor.iterator().next();
         // Control HUb
-        leftFrontDrive = hwMap.get(DcMotorEx.class, "LF");
-        leftBackDrive = hwMap.get(DcMotorEx.class, "LB");
-        rightFrontDrive = hwMap.get(DcMotorEx.class, "RF");
-        rightBackDrive = hwMap.get(DcMotorEx.class, "RB");
+        leftFrontDrive = new Motor(hwMap, "LF");
+        leftBackDrive = new Motor(hwMap, "LB");
+        rightFrontDrive = new Motor(hwMap, "RF");
+        rightBackDrive = new Motor(hwMap, "RB");
         encoderHorizontal = hwMap.get(DcMotor.class, "EH");
         encoderVertical = hwMap.get(DcMotor.class, "EV");
 
+        mecanum = new MecanumDrive(leftFrontDrive,rightFrontDrive,leftBackDrive,rightBackDrive);
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -53,98 +59,31 @@ public class Drivetrain {
         imu = hwMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
-        /**
-         * Allow the 4 wheel motors to be run without encoders since we are doing a time based autonomous
-         * **/
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        if(usingEncoderMotor) {
-            leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        else{
-            leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        resetEncoders();
-
-        /**
-         *Since we are putting the motors on different sides we need to reverse direction so that one wheel doesn't pull us backwards
-         * **/
-
-        //THIS IS THE CORRECT ORIENTATION
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        /**
-         * Reverses shooter motor to shoot the correct way and same with the conveyor motor
-         * **/
-
-        /**
-         * We are setting the motor 0 mode power to be brake as it actively stops the robot and doesn't rely on the surface to slow down once the robot power is set to 0
-         * **/
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        mecanum.stop();
 
 
-        /**
-         *The 4 mecanum wheel motors, intake, conveyor, and shooter motor/servo are set to 0 power to keep it from moving when the user presses the INIT button
-         * **/
-        leftFrontDrive.setPower(0);
-        leftBackDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        rightBackDrive.setPower(0);
 
     }
 
     public void power(double output){
-        leftFrontDrive.setPower(output);
-        leftBackDrive.setPower(output);
-        rightFrontDrive.setPower(output);
-        rightBackDrive.setPower(output);
+        mecanum.driveWithMotorPowers(output,output,output,output);
     }
     public void power(double lf, double lb, double rf, double rb){
-        leftFrontDrive.setPower(lf);
-        leftBackDrive.setPower(lb);
-        rightFrontDrive.setPower(rf);
-        rightBackDrive.setPower(rb);
+        mecanum.driveWithMotorPowers(lf,rf,lb,rb);
     }
     public void moveRobot(double drive, double strafe, double yaw){
-        /**
-         * Wheel powers calculated using gamepad 1's inputs leftStickY, leftStickX, and rightStickX
-         * **/
-        double lF = drive - strafe - yaw;
-        double rF = drive + strafe + yaw;
-        double lB = drive + strafe - yaw;
-        double rB = drive - strafe + yaw;
-        double max = Math.max(Math.abs(lF), Math.abs(rF));
-        max = Math.max(max, Math.abs(lB));
-        max = Math.max(max, Math.abs(rB));
-
-        //normalize the motor values
-        if (max > 1.0) {
-            lF /= max;
-            rF /= max;
-            lB /= max;
-            rB /= max;
+       mecanum.driveRobotCentric(strafe,drive,yaw);
+    }
+    public void driveFieldCentric(double drive, double strafe, double yaw){
+        mecanum.driveFieldCentric(strafe,drive,yaw, getHeading(AngleUnit.DEGREES));
+    }
+    public void drive(double drive, double strafe, double yaw, boolean fieldCentric){
+        if(fieldCentric){
+            driveFieldCentric(drive,strafe,yaw);
         }
-        /**
-         * Sets the wheel's power
-         * **/
-        leftFrontDrive.setPower(lF);
-        rightFrontDrive.setPower(rF);
-        leftBackDrive.setPower(lB);
-        rightBackDrive.setPower(rB);
+       else{
+            moveRobot(drive,strafe,yaw);
+        }
     }
     public double getVertical(){
         return encoderVertical.getCurrentPosition()*distancePerTick;
@@ -164,4 +103,8 @@ public class Drivetrain {
 
 
     }
+    @Override
+    public void periodic() {
+    // This method will be called once per scheduler run
+}
 }
