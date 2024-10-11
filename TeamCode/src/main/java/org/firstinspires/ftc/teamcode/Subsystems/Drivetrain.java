@@ -60,6 +60,7 @@ public class Drivetrain extends SubsystemBase {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         mecanum.stop();
+        resetEncoders();
 
 
 
