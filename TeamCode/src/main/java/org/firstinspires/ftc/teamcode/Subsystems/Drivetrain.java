@@ -2,17 +2,19 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class Drivetrain {
-    public DcMotor leftFrontDrive;
-    public DcMotor leftBackDrive;
-    public DcMotor rightFrontDrive;
-    public DcMotor rightBackDrive;
+    public DcMotorEx leftFrontDrive;
+    public DcMotorEx leftBackDrive;
+    public DcMotorEx rightFrontDrive;
+    public DcMotorEx rightBackDrive;
     public DcMotor encoderVertical;
     public DcMotor encoderHorizontal;
     HardwareMap hwMap;
@@ -20,7 +22,7 @@ public class Drivetrain {
     static int pulsePerRevolution = 8192;
     static double wheelPerimeter = wheelDiameter * Math.PI;
     static double distancePerTick = wheelPerimeter/pulsePerRevolution;
-
+    static VoltageSensor voltage;
     private IMU imu         = null;      // Control/Expansion Hub IMU
 
     public void init(HardwareMap ahwMap, boolean usingEncoderMotor) {
@@ -33,12 +35,12 @@ public class Drivetrain {
         /**
          * Hardware initialized and String Names are in the Configuration File for Hardware Map
          * **/
-
+        voltage = hwMap.voltageSensor.iterator().next();
         // Control HUb
-        leftFrontDrive = hwMap.get(DcMotor.class, "LF");
-        leftBackDrive = hwMap.get(DcMotor.class, "LB");
-        rightFrontDrive = hwMap.get(DcMotor.class, "RF");
-        rightBackDrive = hwMap.get(DcMotor.class, "RB");
+        leftFrontDrive = hwMap.get(DcMotorEx.class, "LF");
+        leftBackDrive = hwMap.get(DcMotorEx.class, "LB");
+        rightFrontDrive = hwMap.get(DcMotorEx.class, "RF");
+        rightBackDrive = hwMap.get(DcMotorEx.class, "RB");
         encoderHorizontal = hwMap.get(DcMotor.class, "EH");
         encoderVertical = hwMap.get(DcMotor.class, "EV");
 
