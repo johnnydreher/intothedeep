@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Commands.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 import java.util.Locale;
 
@@ -42,6 +43,7 @@ public class Teleop extends LinearOpMode
             telemetry.update();
         };
         Drive drive = new Drive(drivetrain);
+
         while (opModeIsActive())
         {
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
@@ -51,6 +53,7 @@ public class Teleop extends LinearOpMode
            drive.drive(y,x,rx,fieldRelative);
            if(gamepad1.b){
                drivetrain.resetEncoders();
+
            }
         }
     }
