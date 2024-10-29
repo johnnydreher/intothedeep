@@ -7,24 +7,38 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Arm extends SubsystemBase {
-    private Motor left, right;
+    private Motor leftArm, rightArm, leftElevator, rightElevator;
     private HardwareMap hwMap;
     public Arm() {
     }
     public void init(HardwareMap ahwMap){
         hwMap = ahwMap;
-        left = new Motor(hwMap,"leftArm");
-        right = new Motor(hwMap,"rightArm");
+        leftArm = new Motor(hwMap,"leftArm");
+        rightArm = new Motor(hwMap,"rightArm");
+
+        leftElevator = new Motor(hwMap,"leftElevator");
+        rightElevator = new Motor(hwMap,"rightElevator");
         //right.setInverted(true);
-        left.setRunMode(Motor.RunMode.RawPower);
-        right.setRunMode(Motor.RunMode.RawPower);
+        leftArm.setRunMode(Motor.RunMode.RawPower);
+        rightArm.setRunMode(Motor.RunMode.RawPower);
+
+        leftElevator.setRunMode(Motor.RunMode.PositionControl);
+        rightElevator.setRunMode(Motor.RunMode.PositionControl);
     }
+
     public void setPower(double power){
-        left.set(power);
-        right.set(power);
+        leftArm.set(power);
+        rightArm.set(power);
         Log.d("Arm",String.format("Out: %f",power));
 
     }
+
+    public void setPosition(double position){
+        leftElevator.set(position);
+        rightElevator.set(position);
+
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
