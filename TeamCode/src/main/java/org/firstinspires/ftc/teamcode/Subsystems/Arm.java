@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Arm extends SubsystemBase {
     private Motor leftArm, rightArm, leftElevator, rightElevator;
     private HardwareMap hwMap;
+    private static final double kP = 0.1;  // Ajuste conforme necessário
+    private double targetPosition = 0;  // Posição alvo desejada
     public Arm() {
     }
     public void init(HardwareMap ahwMap){
@@ -34,8 +36,25 @@ public class Arm extends SubsystemBase {
     }
 
     public void setPosition(double position){
-        leftElevator.set(position);
-        rightElevator.set(position);
+        targetPosition = position;
+    }
+
+    public void updatePosition(){
+        double currentLeftPosition = leftElevator.getCurrentPosition();
+        double currentRightPosition = rightElevator.getCurrentPosition();
+
+        // Calcula o erro de posição
+        double leftError = targetPosition - currentLeftPosition;
+        double rightError = targetPosition - currentRightPosition;
+
+        // Aplica o ganho proporcional ao erro para determinar a potência
+        double leftPower = kP * leftError;
+        double rightPower = kP * rightError;
+
+        leftElevator.set(leftPower);
+        rightElevator.set(rightPower);
+
+        Log.d("Arm", String.format("Left Power: %f, Right Power: %f", leftPower, rightPower));
 
     }
 
