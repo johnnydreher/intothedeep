@@ -23,10 +23,10 @@ public class Drivetrain extends SubsystemBase {
     private DcMotor encoderVertical;
     private DcMotor encoderHorizontal;
     private HardwareMap hwMap;
-    private static double wheelDiameter = 3.5;
-    private static int pulsePerRevolution = 8192;
-    private static double wheelPerimeter = wheelDiameter * Math.PI;
-    private static double distancePerTick = wheelPerimeter/pulsePerRevolution;
+    private static final double wheelDiameter = 3.5;
+    private static final int pulsePerRevolution = 8192;
+    private static final double wheelPerimeter = wheelDiameter * Math.PI;
+    private static final double distancePerTick = wheelPerimeter/pulsePerRevolution;
     private static VoltageSensor voltage;
     private IMU imu         = null;      // Control/Expansion Hub IMU
     private MecanumDrive mecanum =  null;
@@ -46,8 +46,8 @@ public class Drivetrain extends SubsystemBase {
         leftBackDrive = new Motor(hwMap, "LB");
         rightFrontDrive = new Motor(hwMap, "RF");
         rightBackDrive = new Motor(hwMap, "RB");
-        encoderHorizontal = hwMap.get(DcMotor.class, "EH");
-        encoderVertical = hwMap.get(DcMotor.class, "EV");
+        encoderHorizontal = hwMap.get(DcMotor.class, "LF");
+        encoderVertical = hwMap.get(DcMotor.class, "LB");
 
         mecanum = new MecanumDrive(leftFrontDrive,rightFrontDrive,leftBackDrive,rightBackDrive);
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;

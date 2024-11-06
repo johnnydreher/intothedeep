@@ -18,25 +18,27 @@ public class Arm extends SubsystemBase {
         leftArm = new Motor(hwMap,"leftArm");
         rightArm = new Motor(hwMap,"rightArm");
 
-        leftElevator = new Motor(hwMap,"leftElevator");
-        rightElevator = new Motor(hwMap,"rightElevator");
+       leftElevator = new Motor(hwMap,"leftElevator");
+       rightElevator = new Motor(hwMap,"rightElevator");
         //right.setInverted(true);
         leftArm.setRunMode(Motor.RunMode.RawPower);
         rightArm.setRunMode(Motor.RunMode.RawPower);
 
-        leftElevator.setRunMode(Motor.RunMode.PositionControl);
-        rightElevator.setRunMode(Motor.RunMode.PositionControl);
+        leftElevator.setRunMode(Motor.RunMode.RawPower);
+        rightElevator.setRunMode(Motor.RunMode.RawPower);
     }
 
     public void setPower(double power){
         leftArm.set(power);
         rightArm.set(power);
         Log.d("Arm",String.format("Out: %f",power));
-
     }
 
-    public void setPosition(double position){
-        targetPosition = position;
+
+    public void setPowerE(double power){
+        leftElevator.set(power);
+        rightElevator.set(power);
+        Log.d("Elevator",String.format("Out: %f",power));
     }
 
     public void updatePosition(){
@@ -55,7 +57,6 @@ public class Arm extends SubsystemBase {
         rightElevator.set(rightPower);
 
         Log.d("Arm", String.format("Left Power: %f, Right Power: %f", leftPower, rightPower));
-
     }
 
     @Override

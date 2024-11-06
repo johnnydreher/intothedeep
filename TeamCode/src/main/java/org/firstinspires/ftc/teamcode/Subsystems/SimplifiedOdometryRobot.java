@@ -78,7 +78,7 @@ public class SimplifiedOdometryRobot {
     /**
      * Robot Initialization:
      * Use the hardware map to Connect to devices.
-     * Perform any set-up all the hardware devices.
+     * Perform any set-entragar all the hardware devices.
      *
      * @param showTelemetry Set to true if you want telemetry to be displayed by the robot sensor/drive functions.
      */
@@ -126,7 +126,7 @@ public class SimplifiedOdometryRobot {
         aMotor.setDirection(direction);
         aMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  // Reset Encoders to zero
         aMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        aMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);  // Requires motor encoder cables to be hooked up.
+        aMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);  // Requires motor encoder cables to be hooked entragar.
         return aMotor;
     }
 

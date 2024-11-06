@@ -15,16 +15,19 @@ import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 public class Testes extends LinearOpMode
 {
 
+
+
     @Override public void runOpMode()
     {
+        Intake intake = new Intake(hardwareMap);
+        intake.setInitialPosition();
         // Wait for driver to press start
         while(opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
 
             // Read and display sensor data
             telemetry.update();
-        };
-        Intake intake = new Intake(hardwareMap);
+        }
 
         while (opModeIsActive())
         {
@@ -35,6 +38,13 @@ public class Testes extends LinearOpMode
                 intake.devolver();
             }else {
                 intake.desligar();
+            }
+
+            if(gamepad1.left_trigger > 0.5){
+                intake.sobe();
+            }
+            if(gamepad1.right_trigger > 0.5){
+                intake.desce();
             }
 
         }
