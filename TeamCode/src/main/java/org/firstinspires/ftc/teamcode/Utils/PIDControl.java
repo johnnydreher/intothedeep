@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PIDControl {
     ElapsedTime timer = new ElapsedTime();
-    private double lastError = 0;
+    private double lastError;
     double setPoint;
-    double integralSum = 0;
+    double integralSum;
     double lastRead;
     double kp;
     double ki;
@@ -15,6 +15,23 @@ public class PIDControl {
         this.kd = kd;
         this.ki = ki;
         this.kp = kp;
+        this.setPoint = setPoint;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
+        lastRead = 0;
+    }
+    public void update(double setPoint, double kp, double ki, double kd){
+        this.kd = kd;
+        this.ki = ki;
+        this.kp = kp;
+        this.setPoint = setPoint;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
+        lastRead = 0;
+    }
+    public void update(double setPoint){
         this.setPoint = setPoint;
         integralSum = 0;
         lastError = 0;

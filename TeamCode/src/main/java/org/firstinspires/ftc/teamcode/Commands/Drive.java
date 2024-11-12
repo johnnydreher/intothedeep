@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import com.arcrobotics.ftclib.command.CommandBase;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 
-public class Drive {
+public class Drive extends CommandBase {
     private final Drivetrain dt;
     public Drive(Drivetrain dt){
         this.dt = dt;

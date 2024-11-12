@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PIDFControl {
     ElapsedTime timer = new ElapsedTime();
-    private double lastError = 0;
+    private double lastError;
     double setPoint;
-    double integralSum = 0;
+    double integralSum;
     double lastRead;
     double kp;
     double ki;
@@ -22,6 +22,23 @@ public class PIDFControl {
         lastError = 0;
         timer.reset();
         lastRead = 0;
+    }
+    public void updateSetpoint(double setPoint, double kp, double ki, double kd, double kf){
+        this.kd = kd;
+        this.ki = ki;
+        this.kp = kp;
+        this.kf =kf;
+        this.setPoint = setPoint;
+        integralSum = 0;
+        lastError = 0;
+        timer.reset();
+        lastRead = 0;
+    }
+    public void updateSetpoint(double setPoint){
+
+        this.setPoint = setPoint;
+
+        timer.reset();
     }
     public double get(double read) {
         double error = setPoint - read;

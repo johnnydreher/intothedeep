@@ -15,8 +15,6 @@ import org.firstinspires.ftc.teamcode.Commands.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 
-import java.util.Locale;
-
 /*
  * This OpMode illustrates a teleop OpMode for an Omni robot.
  * An external "Robot" class is used to manage all motor/sensor interfaces, and to assist driving functions.
@@ -57,19 +55,28 @@ public class Teleop extends LinearOpMode
                drivetrain.resetEncoders();
            }
 
+           if(gamepad1.dpad_up){
+                arm.setElevatorZero();
+            }
+           if(gamepad1.dpad_down){
+            arm.setArmZero();
+        }
            if(gamepad1.left_bumper){
-                arm.setPower(1);
+                arm.setArm(1);
            } else if (gamepad1.right_bumper) {
-               arm.setPower(-1);
-           }else{arm.setPower(0);}
+               arm.setArm(-1);
+           }
 
            if(gamepad1.right_trigger > 0.5){
-               arm.setPowerE(1);
+               arm.setElevator(1);
            }else if (gamepad1.left_trigger > 0.1){
-               arm.setPowerE(-1);
+               arm.setElevator(-1);
            }else{
-               arm.setPowerE(0);
+               arm.setElevator(0);
            }
+           arm.periodic();
+           arm.updateTelemetry(telemetry);
+           telemetry.update();
         }
     }
 }
