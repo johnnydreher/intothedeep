@@ -78,6 +78,7 @@ public class Drivetrain extends SubsystemBase {
     public void driveFieldCentric(double drive, double strafe, double yaw){
         mecanum.driveFieldCentric(strafe,drive,yaw, getHeading(AngleUnit.DEGREES));
     }
+
     public void drive(double drive, double strafe, double yaw, boolean fieldCentric){
         if(fieldCentric){
             driveFieldCentric(drive,strafe,yaw);

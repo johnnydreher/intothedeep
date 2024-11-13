@@ -26,11 +26,20 @@ public class Arm extends SubsystemBase {
     public static double maxElevatorPosition = 9500;
     public static double middleElevatorDown = 4500;
     private boolean down = false;
+
+    //coeficientes do Braço
+    static final double bKP = 0.1;  // Ajuste conforme necessário
+    static final double bKI = 0.01; // Ajuste conforme necessário
+    static final double bKD = 0.05; // Ajuste conforme necessário
+    private int targetPosition = 0;  // Posição alvo desejada
+
+
     public Arm() {
         pidfArm = new PIDFControl(0,kPArm,kIArm,kDArm,kFArm);
         pidElevator = new PIDControl(0,0.1,0,0);
     }
-    public void init(HardwareMap ahwMap){
+
+    public void init(HardwareMap ahwMap) {
         hwMap = ahwMap;
         leftArm = new MotorEx(hwMap,"leftArm");
         rightArm = new MotorEx(hwMap,"rightArm");
@@ -42,6 +51,11 @@ public class Arm extends SubsystemBase {
         rightElevator.setInverted(true);
         leftElevator.setRunMode(Motor.RunMode.RawPower);
         rightElevator.setRunMode(Motor.RunMode.RawPower);
+
+
+        leftArm.setRunMode(Motor.RunMode.RawPower);
+        rightArm.setRunMode(Motor.RunMode.RawPower);
+
 
 
         leftElevator.setRunMode(Motor.RunMode.RawPower);
@@ -64,20 +78,27 @@ public class Arm extends SubsystemBase {
     public void resetEncodersElevator(){
         leftElevator.encoder.reset();
         rightElevator.encoder.reset();
+
     }
     public double getElevatorEncoder(){
         return (leftElevator.encoder.getPosition()+rightElevator.encoder.getPosition())/2.0;
     }
-    public void setArm(double power){
-        if(power==1) {
-            pidfArm.updateSetpoint(maxArmPosition,kPArm,kIArm,kDArm,kFArm);
+    public void setArm(double power) {
+        if (power == 1) {
+            pidfArm.updateSetpoint(maxArmPosition, kPArm, kIArm, kDArm, kFArm);
 
         }
-        if(power==-1) {
-                pidfArm.updateSetpoint(middleArmDown,kPArm,kIArm,kDArm,kFArm);
+        if (power == -1) {
+            pidfArm.updateSetpoint(middleArmDown, kPArm, kIArm, kDArm, kFArm);
 
 
         }
+    }
+
+    public void setPower(double power) {
+        leftArm.set(power);
+        rightArm.set(power);
+        Log.d("Arm", String.format("Out: %f", power));
 
     }
     public void setArmZero(){
@@ -97,23 +118,6 @@ public class Arm extends SubsystemBase {
         pidElevator.update(0,kPElevator,kIElevator,kDElevator);
     }
 
-    public void updatePosition(){
-        /*double currentLeftPosition = leftElevator.getCurrentPosition();
-        double currentRightPosition = rightElevator.getCurrentPosition();
-
-        // Calcula o erro de posição
-        double leftError = targetPosition - currentLeftPosition;
-        double rightError = targetPosition - currentRightPosition;
-
-        // Aplica o ganho proporcional ao erro para determinar a potência
-        double leftPower = kP * leftError;
-        double rightPower = kP * rightError;
-
-        leftElevator.set(leftPower);
-        rightElevator.set(rightPower);
-
-        Log.d("Arm", String.format("Left Power: %f, Right Power: %f", leftPower, rightPower));*/
-    }
     public void updateTelemetry(Telemetry telemetry){
         telemetry.addData("Left arm",leftArm.encoder.getPosition());
         telemetry.addData("Right arm",rightArm.encoder.getPosition());
@@ -135,5 +139,9 @@ public class Arm extends SubsystemBase {
 
         Log.d("Elevator",String.format("Out: %f",armPower));
         // This method will be called once per scheduler run
+        // Para os motores após atingir a posição alvo
+        leftArm.stopMotor();
+        rightArm.stopMotor();
+        Log.d("Arm", "Braço atingiu a posição alvo.");
     }
 }

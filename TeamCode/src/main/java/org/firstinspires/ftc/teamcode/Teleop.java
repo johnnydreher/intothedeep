@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Commands.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 /*
  * This OpMode illustrates a teleop OpMode for an Omni robot.
@@ -33,6 +34,7 @@ public class Teleop extends LinearOpMode
         // Initialize the drive hardware & Turn on telemetry
         Arm arm = new Arm();
         arm.init(hardwareMap);
+        Intake intake = new Intake(hardwareMap);
         //
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
@@ -42,8 +44,10 @@ public class Teleop extends LinearOpMode
 
             // Read and display sensor data
             telemetry.update();
+            intake.setInitialPosition();
         }
         Drive drive = new Drive(drivetrain);
+
         while (opModeIsActive())
         {
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
@@ -51,7 +55,8 @@ public class Teleop extends LinearOpMode
             double rx = gamepad1.right_stick_x;
             boolean fieldRelative = !gamepad1.a;
            drive.drive(y,x,rx,fieldRelative);
-           if(gamepad1.b){
+
+           if(gamepad1.start){
                drivetrain.resetEncoders();
            }
 
@@ -61,6 +66,7 @@ public class Teleop extends LinearOpMode
            if(gamepad1.dpad_down){
             arm.setArmZero();
         }
+
            if(gamepad1.left_bumper){
                 arm.setArm(1);
            } else if (gamepad1.right_bumper) {
@@ -69,14 +75,37 @@ public class Teleop extends LinearOpMode
 
            if(gamepad1.right_trigger > 0.5){
                arm.setElevator(1);
-           }else if (gamepad1.left_trigger > 0.1){
+           }else if (gamepad1.left_trigger > 0.1) {
                arm.setElevator(-1);
-           }else{
-               arm.setElevator(0);
            }
+
+           if(gamepad2.left_bumper){
+                arm.setPower(0.75);
+           } else if (gamepad2.right_bumper) {
+               arm.setPower(-0.75);
+           }else{arm.setPower(0);}
+
            arm.periodic();
            arm.updateTelemetry(telemetry);
            telemetry.update();
+
+
+
+            if(gamepad2.triangle){
+                intake.puxar();
+            }else if(gamepad2.circle){
+                intake.devolver();
+            }else {
+                intake.desligar();
+            }
+
+            if(gamepad2.square){
+                intake.sobe();
+            }
+            if(gamepad2.cross){
+                intake.desce();
+            }
+
         }
     }
 }

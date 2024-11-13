@@ -17,36 +17,24 @@ public class Testes extends LinearOpMode
 
 
 
-    @Override public void runOpMode()
-    {
+    @Override public void runOpMode() {
         Intake intake = new Intake(hardwareMap);
-        intake.setInitialPosition();
-        // Wait for driver to press start
-        while(opModeInInit()) {
+
+
+        while (opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
+            telemetry.update();
 
             // Read and display sensor data
+
+        }
+
+        while (opModeIsActive()) {
+            String colorDetected = intake.detectColor();
+
+            intake.updateTelemetry(telemetry);
             telemetry.update();
-        }
-
-        while (opModeIsActive())
-        {
-
-            if(gamepad1.right_bumper){
-                intake.puxar();
-            }else if(gamepad1.left_bumper){
-                intake.devolver();
-            }else {
-                intake.desligar();
-            }
-
-            if(gamepad1.left_trigger > 0.5){
-                intake.sobe();
-            }
-            if(gamepad1.right_trigger > 0.5){
-                intake.desce();
-            }
 
         }
-        }
+    }
     }
