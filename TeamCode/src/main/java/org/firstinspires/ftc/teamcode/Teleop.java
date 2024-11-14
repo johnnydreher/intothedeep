@@ -34,9 +34,7 @@ public class Teleop extends LinearOpMode
         // Initialize the drive hardware & Turn on telemetry
         Arm arm = new Arm();
         arm.init(hardwareMap);
-        Intake intake = new Intake();
-        intake.initServos(hardwareMap);
-        intake.initSensor(hardwareMap);
+        Intake intake = new Intake(hardwareMap);
 
         String alianca = "Indefinida";
 
@@ -56,7 +54,7 @@ public class Teleop extends LinearOpMode
                 alianca = "Vermelha";
             }
 
-            intake.Alianca = alianca;
+            intake.setAliance(alianca);
 
             // Read and display sensor data
             telemetry.update();
@@ -107,21 +105,20 @@ public class Teleop extends LinearOpMode
            telemetry.update();
 
 
-            intake.verificarAlianca();
 
             if(gamepad2.triangle){
-                intake.puxar();
+                intake.pull();
             }else if(gamepad2.circle){
-                intake.devolver();
+                intake.push();
             }else {
-                intake.verificarAlianca();
+                intake.powerOff();
             }
 
             if(gamepad2.square){
-                intake.sobe();
+                intake.up();
             }
             if(gamepad2.cross){
-                intake.desce();
+                intake.down();
             }
 
         }

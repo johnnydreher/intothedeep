@@ -1,62 +1,71 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import android.graphics.Color;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.concurrent.TimeUnit;
+
 public class Intake extends SubsystemBase {
-    ColorRangeSensor sensorColor;
-    CRServo intake1;
-    CRServo intake2;
-    Servo bracoLeft;
-    Servo bracoRight;
-    double power = 1;
-    double initialPosition = 0;  // Posição inicial a 0 graus
-    double entragar = 100;       // Posição para entregar a 180 graus
-    double pegar = 75;           // Posição para pegar a 90 graus
-    final double SCALE_FACTOR = 255;
-    float hsvValues[] = {0F, 0F, 0F};
+    private final ColorRangeSensor colorSensor;
+    private final CRServo intakeRight;
+    private final CRServo intakeLeft;
+    private final Servo jointLeft;
+    private final Servo jointRight;
+    private final double power = 1;
+    private final double initialPosition = 0;  // Posição inicial a 0 graus
+    private final double servoDeliveryPosition = 100;       // Posição para entregar a 180 graus
+    private final double servoPickupPosition = 75;           // Posição para pegar a 90 graus
+    private final double SCALE_FACTOR = 255;
+    private final float[] hsvValues = {0F, 0F, 0F};
     // values is a reference to the hsvValues array.
-    final float values[] = hsvValues;
+    private String aliance;
+    private final ElapsedTime timer;
+    private final int timePushingWrongColor = 1000;
+    public Intake(HardwareMap hardwareMap) {
+        intakeRight = hardwareMap.crservo.get("intake1");
+        intakeLeft = hardwareMap.crservo.get("intake2");
+        jointLeft = hardwareMap.servo.get("bracoLeft");
+        jointRight = hardwareMap.servo.get("bracoRight");
 
-    public String Alianca;
-
-    public Intake() {}
-    public void initSensor(HardwareMap hardwareMap){
-        sensorColor = hardwareMap.get(ColorRangeSensor.class, "colorsensor");
+        colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
+        timer = new ElapsedTime();
+        timer.reset();
     }
-
-    public void initServos(HardwareMap hardwareMap){
-        intake1 = hardwareMap.crservo.get("intake1");
-        intake2 = hardwareMap.crservo.get("intake2");
-        bracoLeft = hardwareMap.servo.get("bracoLeft");
-        bracoRight = hardwareMap.servo.get("bracoRight");
+    public void setAliance(String aliance){
+        if(aliance.equals("Azul")){
+            this.aliance = "blue";
+        }
+        else if(aliance.equals("Vermelho")){
+            this.aliance = "red";
+        }
+        else{
+            this.aliance = "Unknown";
+        }
     }
-
 
     public String detectColor() {
-        Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
-                (int) (sensorColor.green() * SCALE_FACTOR),
-                (int) (sensorColor.blue() * SCALE_FACTOR),
+        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
+                (int) (colorSensor.green() * SCALE_FACTOR),
+                (int) (colorSensor.blue() * SCALE_FACTOR),
                 hsvValues);
 
         float hue = hsvValues[0];
 
         if (hue >= 180 && hue < 250) {
-            return "Azul";
+            return "blue";
         } else if (hue >= 50 && hue < 100) {
-            return "Amarelo";
-        } else if (hue >= 0 && hue <40  ) {
-            return "Vermelho";
+            return "yellow";
+        } else if (hue >= 0 && hue <40) {
+            return "red";
         } else {
             return "Unknown";
         }
@@ -64,63 +73,60 @@ public class Intake extends SubsystemBase {
 
 
     // Método para converter graus em valores entre 0 e 1 para o servo
-    public double degreesToServoPosition(double graus) {
-        return graus / 180.0;
+    public double degreesToServoPosition(double degress) {
+        return degress / 180.0;
     }
 
 
     public void setInitialPosition() {
         // Configura o servo na posição inicial (0 graus)
-        bracoLeft.setPosition(degreesToServoPosition(initialPosition));
-        bracoRight.setPosition(1.0 - degreesToServoPosition(initialPosition));
+        jointLeft.setPosition(degreesToServoPosition(initialPosition));
+        jointRight.setPosition(1.0 - degreesToServoPosition(initialPosition));
     }
 
 
-    public void desce() {
+    public void down() {
         // Configura o braço para a posição de pegar (90 graus)
-        double posicaoPegar = degreesToServoPosition(pegar);
-        bracoLeft.setPosition(posicaoPegar);
-        bracoRight.setPosition(1.0 - posicaoPegar);
+        double catchPosition = degreesToServoPosition(servoPickupPosition);
+        jointLeft.setPosition(catchPosition);
+        jointRight.setPosition(1.0 - catchPosition);
     }
 
-    public void sobe() {
+    public void up() {
         // Configura o braço para a posição de entregar (180 graus)
-        double posicaoEntragar = degreesToServoPosition(entragar);
-        bracoLeft.setPosition(posicaoEntragar);
-        bracoRight.setPosition(1.0 - posicaoEntragar);
+        double deliveryPosition = degreesToServoPosition(servoDeliveryPosition);
+        jointLeft.setPosition(deliveryPosition);
+        jointRight.setPosition(1.0 - deliveryPosition);
     }
 
-    public void puxar() {
-        intake1.setPower(power);
-        intake2.setPower(-power);
+    public void pull() {
+        intakeRight.setPower(power);
+        intakeLeft.setPower(-power);
     }
 
-    public void devolver() {
-        intake1.setPower(-power);
-        intake2.setPower(power);
+    public void push() {
+        intakeRight.setPower(-power);
+        intakeLeft.setPower(power);
     }
 
-    // corrigir para aliança vermelha
-    public void verificarAlianca(){
-        if("Azul".equals(Alianca) && "Vermelho".equals(detectColor())){
-            puxar();
-        }else if("Vermelho".equals(Alianca) && "Azul".equals(detectColor())){
-            puxar();
-        }else {
-            desligar();
+    public void powerOff() {
+        if(timer.time(TimeUnit.MILLISECONDS)>timePushingWrongColor) {
+            intakeRight.setPower(0);
+            intakeLeft.setPower(0);
         }
-    }
-
-
-    public void desligar() {
-        intake1.setPower(0);
-        intake2.setPower(0);
     }
 
     public void updateTelemetry(Telemetry telemetry) {
         String colorDetected = detectColor();
         telemetry.addData("Cor detectada", colorDetected);
-        telemetry.addData("Distance",sensorColor.getDistance(DistanceUnit.MM));
-
+    }
+    @Override
+    public void periodic(){
+        if(((detectColor().equals("blue") && aliance.equals("red")) ||
+                (detectColor().equals("red") && aliance.equals("blue")))
+        && colorSensor.getDistance(DistanceUnit.MM)<25){
+            timer.reset();
+            push();
+        }
     }
 }
