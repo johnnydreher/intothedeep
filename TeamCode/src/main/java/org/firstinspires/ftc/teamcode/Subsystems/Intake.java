@@ -1,16 +1,20 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import android.graphics.Color;
 
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Intake extends SubsystemBase {
-    ColorSensor sensorColor;
+    ColorRangeSensor sensorColor;
     CRServo intake1;
     CRServo intake2;
     Servo bracoLeft;
@@ -24,14 +28,20 @@ public class Intake extends SubsystemBase {
     // values is a reference to the hsvValues array.
     final float values[] = hsvValues;
 
-    public Intake(HardwareMap hardwareMap) {
-        /*intake1 = hardwareMap.crservo.get("intake1");
+    public String Alianca;
+
+    public Intake() {}
+    public void initSensor(HardwareMap hardwareMap){
+        sensorColor = hardwareMap.get(ColorRangeSensor.class, "colorsensor");
+    }
+
+    public void initServos(HardwareMap hardwareMap){
+        intake1 = hardwareMap.crservo.get("intake1");
         intake2 = hardwareMap.crservo.get("intake2");
         bracoLeft = hardwareMap.servo.get("bracoLeft");
         bracoRight = hardwareMap.servo.get("bracoRight");
-        */
-        sensorColor = hardwareMap.colorSensor.get("colorsensor");
     }
+
 
     public String detectColor() {
         Color.RGBToHSV((int) (sensorColor.red() * SCALE_FACTOR),
@@ -42,11 +52,11 @@ public class Intake extends SubsystemBase {
         float hue = hsvValues[0];
 
         if (hue >= 180 && hue < 250) {
-            return "blue";
+            return "Azul";
         } else if (hue >= 50 && hue < 100) {
-            return "yellow";
-        } else if (hue >= 0 && hue <40) {
-            return "red";
+            return "Amarelo";
+        } else if (hue >= 0 && hue <40  ) {
+            return "Vermelho";
         } else {
             return "Unknown";
         }
@@ -90,6 +100,18 @@ public class Intake extends SubsystemBase {
         intake2.setPower(power);
     }
 
+    // corrigir para aliança vermelha
+    public void verificarAlianca(){
+        if("Azul".equals(Alianca) && "Vermelho".equals(detectColor())){
+            puxar();
+        }else if("Vermelho".equals(Alianca) && "Azul".equals(detectColor())){
+            puxar();
+        }else {
+            desligar();
+        }
+    }
+
+
     public void desligar() {
         intake1.setPower(0);
         intake2.setPower(0);
@@ -98,5 +120,7 @@ public class Intake extends SubsystemBase {
     public void updateTelemetry(Telemetry telemetry) {
         String colorDetected = detectColor();
         telemetry.addData("Cor detectada", colorDetected);
+        telemetry.addData("Distance",sensorColor.getDistance(DistanceUnit.MM));
+
     }
 }

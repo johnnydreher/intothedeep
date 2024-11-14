@@ -34,13 +34,29 @@ public class Teleop extends LinearOpMode
         // Initialize the drive hardware & Turn on telemetry
         Arm arm = new Arm();
         arm.init(hardwareMap);
-        Intake intake = new Intake(hardwareMap);
-        //
+        Intake intake = new Intake();
+        intake.initServos(hardwareMap);
+        intake.initSensor(hardwareMap);
+
+        String alianca = "Indefinida";
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
         // Wait for driver to press start
         while(opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
+            telemetry.addData("Seleção de Aliança", "Pressione A para Azul, B para Vermelha");
+            telemetry.addData("Aliança Atual", alianca);
+            telemetry.update();
+
+            // Verifica os botões A e B do gamepad para alternar entre azul e vermelha
+            if (gamepad2.a) {
+                alianca = "Azul";
+            } else if (gamepad2.b) {
+                alianca = "Vermelha";
+            }
+
+            intake.Alianca = alianca;
 
             // Read and display sensor data
             telemetry.update();
@@ -87,16 +103,18 @@ public class Teleop extends LinearOpMode
 
            arm.periodic();
            arm.updateTelemetry(telemetry);
+           intake.updateTelemetry(telemetry);
            telemetry.update();
 
 
+            intake.verificarAlianca();
 
             if(gamepad2.triangle){
                 intake.puxar();
             }else if(gamepad2.circle){
                 intake.devolver();
             }else {
-                intake.desligar();
+                intake.verificarAlianca();
             }
 
             if(gamepad2.square){

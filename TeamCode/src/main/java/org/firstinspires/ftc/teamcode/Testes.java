@@ -18,8 +18,8 @@ public class Testes extends LinearOpMode
 
 
     @Override public void runOpMode() {
-        Intake intake = new Intake(hardwareMap);
-
+        Intake intake = new Intake();
+        intake.initSensor(hardwareMap);
 
         while (opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
