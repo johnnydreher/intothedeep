@@ -94,7 +94,18 @@ public class Arm extends SubsystemBase {
 
         }
     }
-
+    public boolean isArmDown(){
+        return getArmEncoder() < middleArmDown+50;
+    }
+    public boolean isElevatorDown(){
+        return getElevatorEncoder() < middleElevatorDown+100;
+    }
+    public boolean isArmUp(){
+        return getArmEncoder() > maxArmPosition-50;
+    }
+    public boolean isElevatorUp(){
+        return getElevatorEncoder() > maxElevatorPosition-100;
+    }
     public void setPower(double power) {
         leftArm.set(power);
         rightArm.set(power);
@@ -133,15 +144,15 @@ public class Arm extends SubsystemBase {
         rightArm.set(armPower);
 
         Log.d("arm",String.format("Out: %f",armPower));
+
+
         double elevatorPower = pidElevator.get(getElevatorEncoder());
         leftElevator.set(elevatorPower);
         rightElevator.set(elevatorPower);
 
-        Log.d("Elevator",String.format("Out: %f",armPower));
+        Log.d("Elevator",String.format("Out: %f",elevatorPower));
         // This method will be called once per scheduler run
         // Para os motores após atingir a posição alvo
-        leftArm.stopMotor();
-        rightArm.stopMotor();
-        Log.d("Arm", "Braço atingiu a posição alvo.");
+
     }
 }

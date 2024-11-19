@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.concurrent.TimeUnit;
 
 public class Intake extends SubsystemBase {
-    private final ColorRangeSensor colorSensor;
+    //private final ColorRangeSensor colorSensor;
     private final CRServo intakeRight;
     private final CRServo intakeLeft;
     private final Servo jointLeft;
@@ -27,37 +27,38 @@ public class Intake extends SubsystemBase {
     private final double SCALE_FACTOR = 255;
     private final float[] hsvValues = {0F, 0F, 0F};
     // values is a reference to the hsvValues array.
-    private String aliance;
+    private String alliance;
     private final ElapsedTime timer;
     private final int timePushingWrongColor = 1000;
+    private final double distanceToElement = 25;
     public Intake(HardwareMap hardwareMap) {
         intakeRight = hardwareMap.crservo.get("intake1");
         intakeLeft = hardwareMap.crservo.get("intake2");
         jointLeft = hardwareMap.servo.get("bracoLeft");
         jointRight = hardwareMap.servo.get("bracoRight");
 
-        colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
+        //colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
         timer = new ElapsedTime();
         timer.reset();
     }
-    public void setAliance(String aliance){
-        if(aliance.equals("Azul")){
-            this.aliance = "blue";
+    public void setAlliance(String alliance){
+    /*    if(alliance.equals("Azul")){
+            this.alliance = "blue";
         }
-        else if(aliance.equals("Vermelho")){
-            this.aliance = "red";
+        else if(alliance.equals("Vermelho")){
+            this.alliance = "red";
         }
         else{
-            this.aliance = "Unknown";
-        }
+            this.alliance = "Unknown";
+        }*/
     }
 
     public String detectColor() {
-        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
+        /*Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
                 hsvValues);
-
+*/
         float hue = hsvValues[0];
 
         if (hue >= 180 && hue < 250) {
@@ -120,13 +121,17 @@ public class Intake extends SubsystemBase {
         String colorDetected = detectColor();
         telemetry.addData("Cor detectada", colorDetected);
     }
+    public boolean elementPresent(){
+        //return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
+        return true;
+    }
     @Override
     public void periodic(){
-        if(((detectColor().equals("blue") && aliance.equals("red")) ||
-                (detectColor().equals("red") && aliance.equals("blue")))
-        && colorSensor.getDistance(DistanceUnit.MM)<25){
+        /*if(((detectColor().equals("blue") && alliance.equals("red")) ||
+                (detectColor().equals("red") && alliance.equals("blue")))
+        && colorSensor.getDistance(DistanceUnit.MM)<distanceToElement){
             timer.reset();
             push();
-        }
+        }*/
     }
 }

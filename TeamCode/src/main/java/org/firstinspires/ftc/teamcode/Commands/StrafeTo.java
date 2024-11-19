@@ -1,22 +1,40 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import android.util.Log;
+
+import com.arcrobotics.ftclib.command.CommandBase;
+
 import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 
-public class StrafeTo {
+public class StrafeTo extends CommandBase {
     Drivetrain drive;
     PIDControl pid;
     double distance;
     public StrafeTo(double distance, Drivetrain drive){
         this.distance = distance;
         this.drive = drive;
+        addRequirements(drive);
         pid = new PIDControl(distance, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
         drive.resetEncoders();
     }
-    public boolean update(){
+
+    @Override
+    public void initialize() {
+
+    }
+    @Override
+    public void execute() {
         double out = pid.get(drive.getHorizontal());
         drive.moveRobot(0,out,0);
+    }
+    @Override
+    public void end(boolean interrupted) {
+        drive.power(0);
+    }
+    @Override
+    public boolean isFinished() {
         return pid.atSetpoint();
     }
 }

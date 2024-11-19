@@ -8,17 +8,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
-import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.geometry.Pose2d;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Commands.Autos.Auto4Pieces;
 import org.firstinspires.ftc.teamcode.Commands.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
@@ -30,9 +28,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Intake;
  * The IMU gyro is used to stabilize the heading when the operator is not requesting a turn.
  */
 
-@TeleOp(name="Command Teleop")
+@Autonomous(name="Auto Principal")
 
-public class CommandTeleop extends CommandOpMode
+public class MainAuto extends CommandOpMode
 {
 
     Drivetrain drivetrain = new Drivetrain();
@@ -51,33 +49,11 @@ public class CommandTeleop extends CommandOpMode
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
 
+        Auto4Pieces auto4Pieces = new Auto4Pieces(drivetrain, arm, intake);
+        schedule(auto4Pieces);
         // Wait for driver to press start
-        while(opModeInInit()) {
-            telemetry.addData(">", "Touch Play to drive");
-            telemetry.addData("Seleção de Aliança", "Pressione A para Azul, B para Vermelha");
-            telemetry.addData("Aliança Atual", alliance);
-            telemetry.update();
 
-            // Verifica os botões A e B do gamepad para alternar entre azul e vermelha
-            if (gamepad2.a) {
-                alliance = "Azul";
-            } else if (gamepad2.b) {
-                alliance = "Vermelha";
-            }
 
-            intake.setAlliance(alliance);
-
-            // Read and display sensor data
-            telemetry.update();
-            intake.setInitialPosition();
-        }
-        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
-        drive = new Drive(drivetrain);
-        drivetrain.setDefaultCommand(new RunCommand(()->drivetrain.drive(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x, !gamepad1.a),drivetrain));
-        gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new InstantCommand(()->arm.setArmZero()));
-        gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(new InstantCommand(()->arm.setElevatorZero()));
         
     }
     /*@Override
