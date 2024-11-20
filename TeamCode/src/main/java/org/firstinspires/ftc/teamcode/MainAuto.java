@@ -9,10 +9,12 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.ftcrobotcontroller.BuildConfig;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -44,72 +46,29 @@ public class MainAuto extends CommandOpMode
         arm.init(hardwareMap);
         intake = new Intake(hardwareMap);
 
-        String alliance = "Indefinida";
-
+        String aliance = "Vermelho";
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
-
+        intake.setAlliance(aliance);
         Auto4Pieces auto4Pieces = new Auto4Pieces(drivetrain, arm, intake);
+        while(opModeInInit()) {
+            telemetry.addData("data", BuildConfig.APP_BUILD_TIME);
+            telemetry.addData("Autonomo principal", " 4 peças");
+            telemetry.addData("Aliança Atual", aliance);
+            telemetry.update();
+
+        }
         schedule(auto4Pieces);
-        // Wait for driver to press start
+
 
 
         
     }
-    /*@Override
+    @Override
     public void run(){
-        double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-        double x = gamepad1.left_stick_x; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x;
-        boolean fieldRelative = !gamepad1.a;
-        drive.drive(y,x,rx,fieldRelative);
-
-        if(gamepad1.start){
-            drivetrain.resetEncoders();
-        }
-
-        if(gamepad1.dpad_up){
-            arm.setElevatorZero();
-        }
-        if(gamepad1.dpad_down){
-            arm.setArmZero();
-        }
-
-        if(gamepad1.left_bumper){
-            arm.setArm(1);
-        } else if (gamepad1.right_bumper) {
-            arm.setArm(-1);
-        }
-
-        if(gamepad1.right_trigger > 0.5){
-            arm.setElevator(1);
-        }else if (gamepad1.left_trigger > 0.5) {
-            arm.setElevator(-1);
-        }
-
-        if(gamepad2.left_bumper){
-            arm.setPower(0.75);
-        } else if (gamepad2.right_bumper) {
-            arm.setPower(-0.75);
-        }else{arm.setPower(0);}
-
-        if(gamepad2.triangle){
-            intake.pull();
-        }else if(gamepad2.circle){
-            intake.push();
-        }else {
-            intake.powerOff();
-        }
-
-        if(gamepad2.square){
-            intake.up();
-        }
-        if(gamepad2.cross){
-            intake.down();
-        }
-
+        CommandScheduler.getInstance().run();
         arm.updateTelemetry(telemetry);
         intake.updateTelemetry(telemetry);
         telemetry.update();
-    }*/
+    }
 }

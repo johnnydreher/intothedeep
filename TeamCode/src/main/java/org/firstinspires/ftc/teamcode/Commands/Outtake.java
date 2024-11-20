@@ -34,7 +34,7 @@ public class Outtake extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-
-        return isFinished;
+        // TODO: 19/11/2024 Adiconar controle por sensor
+        return timer.milliseconds()>1000;
     }
 }

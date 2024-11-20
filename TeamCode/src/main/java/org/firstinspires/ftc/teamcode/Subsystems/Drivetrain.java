@@ -16,18 +16,12 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-    private Motor leftFrontDrive;
-    private Motor leftBackDrive;
-    private Motor rightFrontDrive;
-    private Motor rightBackDrive;
     private DcMotor encoderVertical;
     private DcMotor encoderHorizontal;
-    private HardwareMap hwMap;
     private static final double wheelDiameter = 3.5;
     private static final int pulsePerRevolution = 8192;
     private static final double wheelPerimeter = wheelDiameter * Math.PI;
     private static final double distancePerTick = wheelPerimeter/pulsePerRevolution;
-    private static VoltageSensor voltage;
     private IMU imu         = null;      // Control/Expansion Hub IMU
     private MecanumDrive mecanum =  null;
     public void init(HardwareMap ahwMap, boolean usingEncoderMotor) {
@@ -35,28 +29,27 @@ public class Drivetrain extends SubsystemBase {
         /**
          * Assigns the parent hardware map to local ArtemisHardwareMap class variable
          * **/
-        hwMap = ahwMap;
 
         /**
          * Hardware initialized and String Names are in the Configuration File for Hardware Map
          * **/
-        voltage = hwMap.voltageSensor.iterator().next();
+        VoltageSensor voltage = ahwMap.voltageSensor.iterator().next();
         // Control HUb
-        leftFrontDrive = new Motor(hwMap, "LF");
-        leftBackDrive = new Motor(hwMap, "LB");
-        rightFrontDrive = new Motor(hwMap, "RF");
-        rightBackDrive = new Motor(hwMap, "RB");
-        encoderHorizontal = hwMap.get(DcMotor.class, "LF");
-        encoderVertical = hwMap.get(DcMotor.class, "LB");
+        Motor leftFrontDrive = new Motor(ahwMap, "LF");
+        Motor leftBackDrive = new Motor(ahwMap, "LB");
+        Motor rightFrontDrive = new Motor(ahwMap, "RF");
+        Motor rightBackDrive = new Motor(ahwMap, "RB");
+        encoderHorizontal = ahwMap.get(DcMotor.class, "LF");
+        encoderVertical = ahwMap.get(DcMotor.class, "LB");
 
-        mecanum = new MecanumDrive(leftFrontDrive,rightFrontDrive,leftBackDrive,rightBackDrive);
+        mecanum = new MecanumDrive(leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
         // Now initialize the IMU with this mounting orientation
         // This sample expects the IMU to be in a REV Hub and named "imu".
-        imu = hwMap.get(IMU.class, "imu");
+        imu = ahwMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         mecanum.stop();

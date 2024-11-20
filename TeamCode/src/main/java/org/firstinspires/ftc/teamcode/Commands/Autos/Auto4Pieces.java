@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode.Commands.Autos;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
+import org.firstinspires.ftc.teamcode.Commands.ArmDown;
 import org.firstinspires.ftc.teamcode.Commands.ArmUp;
+import org.firstinspires.ftc.teamcode.Commands.DriveTo;
 import org.firstinspires.ftc.teamcode.Commands.Grab;
 import org.firstinspires.ftc.teamcode.Commands.Outtake;
+import org.firstinspires.ftc.teamcode.Commands.StrafeTo;
+import org.firstinspires.ftc.teamcode.Commands.TurnTo;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
@@ -20,10 +26,22 @@ public class Auto4Pieces extends SequentialCommandGroup {
         this.dt = dt;
         this.arm = arm;
         this.intake = intake;
-        addCommands( new Grab(intake),
+        addCommands(new DriveTo(20,dt),
+                    new StrafeTo(50,dt),
+                    new TurnTo(45,dt),
                     new ArmUp(arm),
                     new Outtake(intake),
-                    new ArmUp(arm) );
+                    new ArmDown(arm),
+                    new TurnTo(-45,dt),
+                    new DriveTo(20,dt),
+                    new Grab(intake),
+                    new DriveTo(-20,dt),
+                    new TurnTo(45,dt),
+                    new ArmUp(arm),
+                    new Outtake(intake),
+                    new ArmDown(arm),
+                    new InstantCommand(()->arm.setArmZero(),arm),
+                    new InstantCommand(()->arm.setElevatorZero(),arm));
         addRequirements(dt, arm, intake);
     }
 
