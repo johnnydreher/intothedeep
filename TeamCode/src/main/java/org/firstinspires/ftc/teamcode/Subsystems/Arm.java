@@ -140,8 +140,6 @@ public class Arm extends SubsystemBase {
         Log.d("Elevator",String.format("Out: %f",armPower));
         // This method will be called once per scheduler run
         // Para os motores após atingir a posição alvo
-        leftArm.stopMotor();
-        rightArm.stopMotor();
-        Log.d("Arm", "Braço atingiu a posição alvo.");
+
     }
 }

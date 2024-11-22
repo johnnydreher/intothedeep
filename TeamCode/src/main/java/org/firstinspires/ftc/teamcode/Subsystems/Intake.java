@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.concurrent.TimeUnit;
 
 public class Intake extends SubsystemBase {
-    private final ColorRangeSensor colorSensor;
+    //private final ColorRangeSensor colorSensor;
     private final CRServo intakeRight;
     private final CRServo intakeLeft;
     private final Servo jointLeft;
@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
         jointLeft = hardwareMap.servo.get("bracoLeft");
         jointRight = hardwareMap.servo.get("bracoRight");
 
-        colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
+        //colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
         timer = new ElapsedTime();
         timer.reset();
     }
@@ -52,7 +52,7 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    public String detectColor() {
+    /*public String detectColor() {
         Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
@@ -69,7 +69,7 @@ public class Intake extends SubsystemBase {
         } else {
             return "Unknown";
         }
-    }
+    }*/
 
 
     // Método para converter graus em valores entre 0 e 1 para o servo
@@ -117,16 +117,16 @@ public class Intake extends SubsystemBase {
     }
 
     public void updateTelemetry(Telemetry telemetry) {
-        String colorDetected = detectColor();
-        telemetry.addData("Cor detectada", colorDetected);
+        //String colorDetected = detectColor();
+        //telemetry.addData("Cor detectada", colorDetected);
     }
     @Override
     public void periodic(){
-        if(((detectColor().equals("blue") && aliance.equals("red")) ||
+       /* if(((detectColor().equals("blue") && aliance.equals("red")) ||
                 (detectColor().equals("red") && aliance.equals("blue")))
         && colorSensor.getDistance(DistanceUnit.MM)<25){
             timer.reset();
             push();
-        }
+        }*/
     }
 }

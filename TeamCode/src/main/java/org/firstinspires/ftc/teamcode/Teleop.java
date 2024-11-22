@@ -68,41 +68,41 @@ public class Teleop extends LinearOpMode
             double x = gamepad1.left_stick_x; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
             boolean fieldRelative = !gamepad1.a;
-           drive.drive(y,x,rx,fieldRelative);
+            drivetrain.drive(y,x,rx,fieldRelative);
+           //drive.drive(y,x,rx,fieldRelative);
 
+           //zerar encoder e field oriented
            if(gamepad1.start){
                drivetrain.resetEncoders();
            }
 
-           if(gamepad1.dpad_up){
+           //zerar elevador
+           if(gamepad2.dpad_up){
                 arm.setElevatorZero();
             }
-           if(gamepad1.dpad_down){
+           if(gamepad2.dpad_down){
             arm.setArmZero();
         }
 
-           if(gamepad1.left_bumper){
+           if(gamepad2.left_bumper){
                 arm.setArm(1);
-           } else if (gamepad1.right_bumper) {
+           } else if (gamepad2.right_bumper) {
                arm.setArm(-1);
            }
 
-           if(gamepad1.right_trigger > 0.5){
+           if(gamepad2.right_trigger > 0.5){
                arm.setElevator(1);
-           }else if (gamepad1.left_trigger > 0.1) {
+           }else if (gamepad2.left_trigger > 0.1) {
                arm.setElevator(-1);
            }
 
-           if(gamepad2.left_bumper){
-                arm.setPower(0.75);
-           } else if (gamepad2.right_bumper) {
-               arm.setPower(-0.75);
-           }else{arm.setPower(0);}
+
 
            arm.periodic();
            arm.updateTelemetry(telemetry);
            intake.updateTelemetry(telemetry);
            telemetry.update();
+
 
 
 

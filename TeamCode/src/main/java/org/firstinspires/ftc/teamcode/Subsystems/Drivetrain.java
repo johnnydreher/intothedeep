@@ -102,8 +102,6 @@ public class Drivetrain extends SubsystemBase {
         encoderVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         encoderHorizontal.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         imu.resetYaw();
-
-
     }
     @Override
     public void periodic() {
