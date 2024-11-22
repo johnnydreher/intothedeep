@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -16,8 +17,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-    private DcMotor encoderVertical;
-    private DcMotor encoderHorizontal;
+    private Motor.Encoder encoderVertical;
+    private Motor.Encoder encoderHorizontal;
     private static final double wheelDiameter = 3.5;
     private static final int pulsePerRevolution = 8192;
     private static final double wheelPerimeter = wheelDiameter * Math.PI;
@@ -39,9 +40,13 @@ public class Drivetrain extends SubsystemBase {
         Motor leftBackDrive = new Motor(ahwMap, "LB");
         Motor rightFrontDrive = new Motor(ahwMap, "RF");
         Motor rightBackDrive = new Motor(ahwMap, "RB");
-        encoderHorizontal = ahwMap.get(DcMotor.class, "LF");
-        encoderVertical = ahwMap.get(DcMotor.class, "LB");
+        encoderHorizontal = rightBackDrive.encoder;
+        encoderVertical = leftFrontDrive.encoder;
 
+        encoderVertical.setDirection(Motor.Direction.REVERSE);
+
+        encoderVertical.setDistancePerPulse(distancePerTick);
+        encoderHorizontal.setDistancePerPulse(distancePerTick);
         mecanum = new MecanumDrive(leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive);
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
@@ -81,19 +86,17 @@ public class Drivetrain extends SubsystemBase {
         }
     }
     public double getVertical(){
-        return encoderVertical.getCurrentPosition()*distancePerTick;
+        return encoderVertical.getDistance();
     }
     public double getHorizontal(){
-        return encoderHorizontal.getCurrentPosition()*distancePerTick;
+        return encoderHorizontal.getDistance();
     }
     public double getHeading(AngleUnit unit){
         return imu.getRobotYawPitchRollAngles().getYaw(unit);
     }
     public void resetEncoders(){
-        encoderVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        encoderHorizontal.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        encoderVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        encoderHorizontal.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderHorizontal.reset();
+        encoderVertical.reset();
         imu.resetYaw();
 
 

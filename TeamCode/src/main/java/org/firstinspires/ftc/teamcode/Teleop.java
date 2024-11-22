@@ -74,22 +74,22 @@ public class Teleop extends LinearOpMode
                drivetrain.resetEncoders();
            }
 
-           if(gamepad1.dpad_up){
+           if(gamepad2.dpad_up){
                 arm.setElevatorZero();
             }
-           if(gamepad1.dpad_down){
+           if(gamepad2.dpad_down){
             arm.setArmZero();
         }
 
-           if(gamepad1.left_bumper){
+           if(gamepad2.left_bumper){
                 arm.setArm(1);
-           } else if (gamepad1.right_bumper) {
+           } else if (gamepad2.right_bumper) {
                arm.setArm(-1);
            }
 
-           if(gamepad1.right_trigger > 0.5){
+           if(gamepad2.right_trigger > 0.5){
                arm.setElevator(1);
-           }else if (gamepad1.left_trigger > 0.1) {
+           }else if (gamepad2.left_trigger > 0.1) {
                arm.setElevator(-1);
            }
 
