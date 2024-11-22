@@ -94,7 +94,18 @@ public class Arm extends SubsystemBase {
 
         }
     }
-
+    public boolean isArmDown(){
+        return getArmEncoder() < middleArmDown+50;
+    }
+    public boolean isElevatorDown(){
+        return getElevatorEncoder() < middleElevatorDown+250;
+    }
+    public boolean isArmUp(){
+        return getArmEncoder() > maxArmPosition-50;
+    }
+    public boolean isElevatorUp(){
+        return getElevatorEncoder() > maxElevatorPosition-250;
+    }
     public void setPower(double power) {
         leftArm.set(power);
         rightArm.set(power);
@@ -123,6 +134,8 @@ public class Arm extends SubsystemBase {
         telemetry.addData("Right arm",rightArm.encoder.getPosition());
         telemetry.addData("Left elevator",leftElevator.encoder.getPosition());
         telemetry.addData("Right elevator",rightElevator.encoder.getPosition());
+        telemetry.addData("Is Arm up",isArmUp());
+        telemetry.addData("Is Elevator Up",isElevatorUp());
 
     }
     @Override
@@ -132,12 +145,14 @@ public class Arm extends SubsystemBase {
         leftArm.set(armPower);
         rightArm.set(armPower);
 
-        Log.d("arm",String.format("Out: %f",armPower));
+        //Log.d("arm",String.format("Out: %f",armPower));
+
+
         double elevatorPower = pidElevator.get(getElevatorEncoder());
         leftElevator.set(elevatorPower);
         rightElevator.set(elevatorPower);
 
-        Log.d("Elevator",String.format("Out: %f",armPower));
+        //Log.d("Elevator",String.format("Out: %f",elevatorPower));
         // This method will be called once per scheduler run
         // Para os motores após atingir a posição alvo
 

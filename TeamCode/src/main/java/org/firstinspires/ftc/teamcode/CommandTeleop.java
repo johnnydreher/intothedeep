@@ -8,7 +8,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Commands.Drive;
@@ -38,33 +46,41 @@ public class CommandTeleop extends CommandOpMode
         arm.init(hardwareMap);
         intake = new Intake(hardwareMap);
 
-        String aliance = "Indefinida";
+        String alliance = "Indefinida";
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
+
         // Wait for driver to press start
         while(opModeInInit()) {
             telemetry.addData(">", "Touch Play to drive");
             telemetry.addData("Seleção de Aliança", "Pressione A para Azul, B para Vermelha");
-            telemetry.addData("Aliança Atual", aliance);
+            telemetry.addData("Aliança Atual", alliance);
             telemetry.update();
 
             // Verifica os botões A e B do gamepad para alternar entre azul e vermelha
             if (gamepad2.a) {
-                aliance = "Azul";
+                alliance = "Azul";
             } else if (gamepad2.b) {
-                aliance = "Vermelha";
+                alliance = "Vermelha";
             }
 
-            intake.setAliance(aliance);
+            intake.setAlliance(alliance);
 
             // Read and display sensor data
             telemetry.update();
             intake.setInitialPosition();
         }
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         drive = new Drive(drivetrain);
+        drivetrain.setDefaultCommand(new RunCommand(()->drivetrain.drive(-gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x, !gamepad1.a),drivetrain));
+        gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(()->arm.setArmZero()));
+        gamepadEx1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(()->arm.setElevatorZero()));
+        
     }
-    @Override
+    /*@Override
     public void run(){
         double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = gamepad1.left_stick_x; // Counteract imperfect strafing
@@ -119,5 +135,5 @@ public class CommandTeleop extends CommandOpMode
         arm.updateTelemetry(telemetry);
         intake.updateTelemetry(telemetry);
         telemetry.update();
-    }
+    }*/
 }

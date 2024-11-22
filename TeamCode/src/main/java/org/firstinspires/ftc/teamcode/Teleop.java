@@ -54,7 +54,7 @@ public class Teleop extends LinearOpMode
                 alianca = "Vermelha";
             }
 
-            intake.setAliance(alianca);
+            intake.setAlliance(alianca);
 
             // Read and display sensor data
             telemetry.update();
@@ -96,7 +96,11 @@ public class Teleop extends LinearOpMode
                arm.setElevator(-1);
            }
 
-
+           /*if(gamepad2.left_bumper){
+                arm.setPower(0.75);
+           } else if (gamepad2.right_bumper) {
+               arm.setPower(-0.75);
+           }else{arm.setPower(0);}*/
 
            arm.periodic();
            arm.updateTelemetry(telemetry);
