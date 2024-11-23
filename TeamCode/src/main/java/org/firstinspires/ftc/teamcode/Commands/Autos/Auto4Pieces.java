@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.Commands.ArmDown;
 import org.firstinspires.ftc.teamcode.Commands.ArmUp;
@@ -27,21 +28,26 @@ public class Auto4Pieces extends SequentialCommandGroup {
         this.arm = arm;
         this.intake = intake;
         addCommands(new DriveTo(20,dt),
-                    new StrafeTo(50,dt),
+                    new WaitCommand(200),
+                    new StrafeTo(-50,dt),
+                    new WaitCommand(200),
                     new TurnTo(45,dt),
                     new ArmUp(arm),
                     new Outtake(intake),
                     new ArmDown(arm),
                     new TurnTo(-45,dt),
+                    new WaitCommand(200),
                     new DriveTo(20,dt),
                     new Grab(intake),
                     new DriveTo(-20,dt),
+                    new WaitCommand(200),
                     new TurnTo(45,dt),
                     new ArmUp(arm),
                     new Outtake(intake),
                     new ArmDown(arm),
                     new InstantCommand(()->arm.setArmZero(),arm),
-                    new InstantCommand(()->arm.setElevatorZero(),arm));
+                    new InstantCommand(()->arm.setElevatorZero(),arm),
+                    new WaitCommand(15000));
         addRequirements(dt, arm, intake);
     }
 

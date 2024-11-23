@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Commands;
 import android.util.Log;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
@@ -10,9 +11,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 
 public class StrafeTo extends CommandBase {
-    Drivetrain drive;
-    PIDControl pid,pidDrive, pidYaw;
-    double distance;
+    private Drivetrain drive;
+    private PIDControl pid,pidDrive, pidYaw;
+    private double distance;
+    private ElapsedTime to = new ElapsedTime();
     public StrafeTo(double distance, Drivetrain drive){
         this.distance = distance;
         this.drive = drive;
@@ -25,7 +27,7 @@ public class StrafeTo extends CommandBase {
 
     @Override
     public void initialize() {
-
+        to.reset();
     }
     @Override
     public void execute() {
@@ -44,7 +46,7 @@ public class StrafeTo extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return pid.atSetpoint();
+        return pid.atSetpoint() || to.milliseconds()>2000;
     }
 }
 
