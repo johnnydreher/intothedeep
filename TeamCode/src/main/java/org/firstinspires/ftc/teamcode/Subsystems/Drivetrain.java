@@ -98,8 +98,6 @@ public class Drivetrain extends SubsystemBase {
         encoderHorizontal.reset();
         encoderVertical.reset();
         imu.resetYaw();
-
-
     }
     @Override
     public void periodic() {

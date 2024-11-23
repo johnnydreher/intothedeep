@@ -42,7 +42,7 @@ public class Intake extends SubsystemBase {
         timer.reset();
     }
     public void setAlliance(String alliance){
-    /*    if(alliance.equals("Azul")){
+       if(alliance.equals("Azul")){
             this.alliance = "blue";
         }
         else if(alliance.equals("Vermelho")){
@@ -50,15 +50,18 @@ public class Intake extends SubsystemBase {
         }
         else{
             this.alliance = "Unknown";
-        }*/
+        }
     }
 
+
+    /*
     public String detectColor() {
-        /*Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
+        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
+    public String detectColor() {
+        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
                 hsvValues);
-*/
         float hue = hsvValues[0];
 
         if (hue >= 180 && hue < 250) {
@@ -71,6 +74,8 @@ public class Intake extends SubsystemBase {
             return "Unknown";
         }
     }
+
+     */
 
 
     // Método para converter graus em valores entre 0 e 1 para o servo
@@ -118,20 +123,30 @@ public class Intake extends SubsystemBase {
     }
 
     public void updateTelemetry(Telemetry telemetry) {
-        String colorDetected = detectColor();
-        telemetry.addData("Cor detectada", colorDetected);
+        //String colorDetected = detectColor();
+        //telemetry.addData("Cor detectada", colorDetected);
     }
     public boolean elementPresent(){
         //return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
         return true;
     }
     @Override
-    public void periodic(){
-        /*if(((detectColor().equals("blue") && alliance.equals("red")) ||
-                (detectColor().equals("red") && alliance.equals("blue")))
-        && colorSensor.getDistance(DistanceUnit.MM)<distanceToElement){
-            timer.reset();
-            push();
-        }*/
+    public void periodic() {
+
+        /*
+            if (((detectColor().equals("blue") && aliance.equals("red")) ||
+                    (detectColor().equals("red") && aliance.equals("blue")))
+                    && colorSensor.getDistance(DistanceUnit.MM) < 25) {
+
+                if (((detectColor().equals("blue") && alliance.equals("red")) ||
+                        (detectColor().equals("red") && alliance.equals("blue")))
+                        && colorSensor.getDistance(DistanceUnit.MM) < distanceToElement) {
+                    timer.reset();
+                    push();
+
+                }
+            }
+        }
+         */
     }
 }
