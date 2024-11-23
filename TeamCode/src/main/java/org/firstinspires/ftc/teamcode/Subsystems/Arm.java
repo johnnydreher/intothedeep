@@ -24,7 +24,7 @@ public class Arm extends SubsystemBase {
     public static double maxArmPosition = 1200;
     public static double middleArmDown = 100;
     public static double maxElevatorPosition = 9500;
-    public static double middleElevatorDown = 4500;
+    public static double middleElevatorDown = 5500;
     private boolean down = false;
 
     //coeficientes do Braço

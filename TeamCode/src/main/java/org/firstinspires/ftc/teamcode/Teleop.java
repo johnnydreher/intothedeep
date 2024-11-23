@@ -75,23 +75,34 @@ public class Teleop extends LinearOpMode
            }
 
            if(gamepad2.dpad_up){
-                arm.setElevatorZero();
+
             }
            if(gamepad2.dpad_down){
             arm.setArmZero();
         }
 
+           if(gamepad2.cross){
+               arm.setArmZero();
+               arm.setElevatorZero();
+           }else {
+
+
+
+           }
+
            if(gamepad2.left_bumper){
                 arm.setArm(1);
            } else if (gamepad2.right_bumper) {
-               arm.setArm(-1);
+
            }
+
 
            if(gamepad2.right_trigger > 0.5){
                arm.setElevator(1);
            }else if (gamepad2.left_trigger > 0.1) {
                arm.setElevator(-1);
            }
+
 
            /*if(gamepad2.left_bumper){
                 arm.setPower(0.75);
@@ -105,21 +116,18 @@ public class Teleop extends LinearOpMode
            telemetry.update();
 
 
-
-            if(gamepad2.triangle){
+            if(gamepad2.left_bumper){
                 intake.pull();
-            }else if(gamepad2.circle){
+            }else if(gamepad2.right_bumper){
                 intake.push();
+                intake.down();
             }else {
                 intake.powerOff();
-            }
-
-            if(gamepad2.square){
                 intake.up();
             }
-            if(gamepad2.cross){
-                intake.down();
-            }
+
+
+
 
         }
     }

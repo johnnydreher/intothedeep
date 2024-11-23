@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Commands.DriveTo;
+import org.firstinspires.ftc.teamcode.Commands.StrafeTo;
+import org.firstinspires.ftc.teamcode.Commands.TurnTo;
+import org.firstinspires.ftc.teamcode.Constants.DistanceConstant;
 import org.firstinspires.ftc.teamcode.Subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
@@ -36,11 +39,28 @@ public class StaticHeading extends LinearOpMode {
 
 
         waitForStart();
+        if(DistanceConstant.distanceX!=0) {
+            DriveTo drive = new DriveTo(DistanceConstant.distanceX, drivetrain);
+            while (!drive.isFinished()) {
+                updateTelemetry("Driving");
+                drive.execute();
+            }
+        }
+        if(DistanceConstant.distanceY!=0) {
+            StrafeTo s = new StrafeTo(DistanceConstant.distanceY, drivetrain);
+            while (!s.isFinished()) {
+                updateTelemetry("Strafing");
+                s.execute();
+            }
+        }
+        if(DistanceConstant.angle!=0) {
+            TurnTo t = new TurnTo(DistanceConstant.angle, drivetrain);
+            while (!t.isFinished()) {
+                updateTelemetry("Turning");
+                t.execute();
+            }
+        }
 
-       /* DriveTo drive = new DriveTo(distance,drivetrain);
-        while (!drive.update()){
-            updateTelemetry("Driving");
-        }*/
         drivetrain.power(0);
         while(opModeIsActive()){
             updateTelemetry("End");

@@ -26,7 +26,7 @@ public class TurnTo extends CommandBase {
     @Override
     public void execute() {
         double out = pid.get(drive.getHeading(AngleUnit.DEGREES));
-        drive.moveRobot(0,0,-out);
+        drive.driveFieldCentric(0,0,-out);
     }
     @Override
     public void end(boolean interrupted) {

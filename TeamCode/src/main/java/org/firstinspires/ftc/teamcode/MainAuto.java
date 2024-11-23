@@ -60,9 +60,6 @@ public class MainAuto extends CommandOpMode
         }
         schedule(auto4Pieces);
 
-
-
-        
     }
     @Override
     public void run(){

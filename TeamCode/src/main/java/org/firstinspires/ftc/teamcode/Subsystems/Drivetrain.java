@@ -44,6 +44,7 @@ public class Drivetrain extends SubsystemBase {
         encoderVertical = leftFrontDrive.encoder;
 
         encoderVertical.setDirection(Motor.Direction.REVERSE);
+        encoderHorizontal.setDirection(Motor.Direction.REVERSE);
 
         encoderVertical.setDistancePerPulse(distancePerTick);
         encoderHorizontal.setDistancePerPulse(distancePerTick);
