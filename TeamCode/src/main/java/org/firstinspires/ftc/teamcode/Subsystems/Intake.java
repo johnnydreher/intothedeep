@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.concurrent.TimeUnit;
 
 public class Intake extends SubsystemBase {
-    //private final ColorRangeSensor colorSensor;
+    private final ColorRangeSensor colorSensor;
     private final CRServo intakeRight;
     private final CRServo intakeLeft;
     private final Servo jointLeft;
@@ -37,27 +37,19 @@ public class Intake extends SubsystemBase {
         jointLeft = hardwareMap.servo.get("bracoLeft");
         jointRight = hardwareMap.servo.get("bracoRight");
 
-        //colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
+        colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
         timer = new ElapsedTime();
         timer.reset();
     }
     public void setAlliance(String alliance){
-       if(alliance.equals("Azul")){
-            this.alliance = "blue";
-        }
-        else if(alliance.equals("Vermelho")){
-            this.alliance = "red";
-        }
-        else{
-            this.alliance = "Unknown";
-        }
+       this.alliance = alliance;
+
     }
 
-
-    /*
     public String detectColor() {
-        Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
-    public String detectColor() {
+        if(colorSensor.getDistance(DistanceUnit.MM)>18){
+            return "Unknown";
+        }
         Color.RGBToHSV((int) (colorSensor.red() * SCALE_FACTOR),
                 (int) (colorSensor.green() * SCALE_FACTOR),
                 (int) (colorSensor.blue() * SCALE_FACTOR),
@@ -66,7 +58,7 @@ public class Intake extends SubsystemBase {
 
         if (hue >= 180 && hue < 250) {
             return "blue";
-        } else if (hue >= 50 && hue < 100) {
+        } else if (hue >= 60 && hue < 100) {
             return "yellow";
         } else if (hue >= 0 && hue <40) {
             return "red";
@@ -74,8 +66,6 @@ public class Intake extends SubsystemBase {
             return "Unknown";
         }
     }
-
-     */
 
 
     // Método para converter graus em valores entre 0 e 1 para o servo
@@ -106,13 +96,13 @@ public class Intake extends SubsystemBase {
     }
 
     public void pull() {
-        intakeRight.setPower(power);
-        intakeLeft.setPower(-power);
+        intakeRight.setPower(-power);
+        intakeLeft.setPower(power);
     }
 
     public void push() {
-        intakeRight.setPower(-power);
-        intakeLeft.setPower(power);
+        intakeRight.setPower(power);
+        intakeLeft.setPower(-power);
     }
 
     public void powerOff() {
@@ -123,30 +113,24 @@ public class Intake extends SubsystemBase {
     }
 
     public void updateTelemetry(Telemetry telemetry) {
-        //String colorDetected = detectColor();
-        //telemetry.addData("Cor detectada", colorDetected);
+        String colorDetected = detectColor();
+        telemetry.addData("Cor detectada", colorDetected);
+        telemetry.addData("Distancia",colorSensor.getDistance(DistanceUnit.MM));
     }
     public boolean elementPresent(){
-        //return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
-        return true;
+        return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
+
     }
     @Override
     public void periodic() {
-
-        /*
-            if (((detectColor().equals("blue") && aliance.equals("red")) ||
-                    (detectColor().equals("red") && aliance.equals("blue")))
-                    && colorSensor.getDistance(DistanceUnit.MM) < 25) {
-
-                if (((detectColor().equals("blue") && alliance.equals("red")) ||
-                        (detectColor().equals("red") && alliance.equals("blue")))
-                        && colorSensor.getDistance(DistanceUnit.MM) < distanceToElement) {
-                    timer.reset();
-                    push();
-
-                }
-            }
+        if (((detectColor().equals("blue") && alliance.equals("red")) ||
+           (detectColor().equals("red") && alliance.equals("blue")))
+           && timer.milliseconds()>timePushingWrongColor) {
+               timer.reset();
+               pull();
         }
-         */
+
     }
+
+
 }

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Commands.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
+import org.firstinspires.ftc.teamcode.Subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
@@ -36,7 +37,7 @@ public class Teleop extends LinearOpMode
         arm.init(hardwareMap);
         Intake intake = new Intake(hardwareMap);
 
-        String alianca = "Indefinida";
+        String alianca = intake.detectColor();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
@@ -47,12 +48,7 @@ public class Teleop extends LinearOpMode
             telemetry.addData("Aliança Atual", alianca);
             telemetry.update();
 
-            // Verifica os botões A e B do gamepad para alternar entre azul e vermelha
-            if (gamepad2.a) {
-                alianca = "Azul";
-            } else if (gamepad2.b) {
-                alianca = "Vermelha";
-            }
+            alianca = intake.detectColor();
 
             intake.setAlliance(alianca);
 
@@ -61,6 +57,7 @@ public class Teleop extends LinearOpMode
             intake.setInitialPosition();
         }
         Drive drive = new Drive(drivetrain);
+        Blinkin blinkin = new Blinkin(hardwareMap);
 
         while (opModeIsActive())
         {
@@ -70,64 +67,78 @@ public class Teleop extends LinearOpMode
             boolean fieldRelative = !gamepad1.a;
            drive.drive(y,x,rx,fieldRelative);
 
+
+            String color = intake.detectColor();
+
+            if(color=="blue"){
+                blinkin.setPiscaAzul();
+                gamepad1.setLedColor(0,0,1.0,60000);
+            }
+            else if (color=="red"){
+                blinkin.setPiscaVermelho();
+                gamepad1.setLedColor(1.0,0,0,60000);
+            }
+            else if(color=="yellow"){
+                blinkin.setPiscaAmarelo();
+                gamepad1.setLedColor(1.0,1.0,0,60000);
+            } else if (alianca == "blue") {
+                blinkin.setAzul();
+            } else if (alianca == "red") {
+                blinkin.setVermelho();
+            }else{
+                blinkin.setApagado();
+                gamepad1.setLedColor(0,1.0,0,60000);
+            }
+
+
            if(gamepad1.start){
                drivetrain.resetEncoders();
            }
 
-           if(gamepad2.dpad_up){
-
-            }
-           if(gamepad2.dpad_down){
-            arm.setArmZero();
-        }
+           if(gamepad2.right_bumper){
+               intake.down();
+               intake.pull();
+           }
+           if(gamepad2.left_bumper){
+               intake.push();
+           }
 
            if(gamepad2.cross){
-               arm.setArmZero();
+               arm.setArm(-1);
                arm.setElevatorZero();
-           }else {
-
-
-
+           } else if (gamepad2.circle) {
+               arm.setArm(-1);
+               arm.setElevator(-1);
+           }else if(gamepad2.triangle){
+               arm.setArm(1);
+               arm.setElevatorZero();
+           }else if(gamepad2.square){
+               arm.setArm(1);
+               arm.setElevator(1);
            }
 
            if(gamepad2.left_bumper){
-                arm.setArm(1);
-           } else if (gamepad2.right_bumper) {
-
+               intake.pull();
+           }else if(gamepad2.right_bumper){
+               intake.push();
+               intake.down();
+           }else {
+               intake.powerOff();
+               intake.up();
            }
 
-
-           if(gamepad2.right_trigger > 0.5){
-               arm.setElevator(1);
-           }else if (gamepad2.left_trigger > 0.1) {
-               arm.setElevator(-1);
+           if(gamepad2.dpad_up){
+               arm.setArmZero();
            }
 
-
-           /*if(gamepad2.left_bumper){
-                arm.setPower(0.75);
-           } else if (gamepad2.right_bumper) {
-               arm.setPower(-0.75);
-           }else{arm.setPower(0);}*/
-
+           if(gamepad2.ps){
+               blinkin.setRainbow();
+           }
            arm.periodic();
            arm.updateTelemetry(telemetry);
            intake.updateTelemetry(telemetry);
+           intake.periodic();
            telemetry.update();
-
-
-            if(gamepad2.left_bumper){
-                intake.pull();
-            }else if(gamepad2.right_bumper){
-                intake.push();
-                intake.down();
-            }else {
-                intake.powerOff();
-                intake.up();
-            }
-
-
-
 
         }
     }
