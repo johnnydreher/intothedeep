@@ -11,6 +11,7 @@ import android.graphics.Color;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Utils.FileHandler;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,9 +41,15 @@ public class Intake extends SubsystemBase {
         colorSensor = hardwareMap.get(ColorRangeSensor.class,"colorsensor");
         timer = new ElapsedTime();
         timer.reset();
+        if(FileHandler.fileExists("alliance.txt")) {
+            alliance = FileHandler.readSringFromFile("alliance.txt");
+            FileHandler.deleteFile("alliance.txt");
+        }
     }
     public void setAlliance(String alliance){
        this.alliance = alliance;
+       FileHandler.writeStringToFile(alliance,"alliance.txt");
+
 
     }
 

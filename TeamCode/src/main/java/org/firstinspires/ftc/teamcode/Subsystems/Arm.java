@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Utils.FileHandler;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 import org.firstinspires.ftc.teamcode.Utils.PIDFControl;
 
@@ -38,12 +39,13 @@ public class Arm extends SubsystemBase {
     private boolean manualElevatorControl = false;
     private double lastArmPosition = 0;
     private double lastElevatorPosition = 0;
+    private boolean isAutonomous = false;
 
 
-
-    public Arm() {
+    public Arm(boolean isAutonomous) {
         pidfArm = new PIDFControl(0,kPArm,kIArm,kDArm,kFArm);
         pidElevator = new PIDControl(0,0.1,0,0);
+        this.isAutonomous = isAutonomous;
     }
 
     public void init(HardwareMap ahwMap) {
@@ -72,6 +74,27 @@ public class Arm extends SubsystemBase {
         rightArm.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         resetEncodersArm();
         resetEncodersElevator();
+        if(FileHandler.fileExists("elevator.txt")) {
+            double encoder = FileHandler.readValueFromFile("elevator.txt");
+            FileHandler.deleteFile("elevator.txt");
+            leftElevator.set(-0.5);
+            rightElevator.set(-0.5);
+            while(getElevatorEncoder()>encoder){
+                Log.d("Elevator",String.format("Encoder: %f",getElevatorEncoder()));
+            }
+           resetEncodersElevator();
+        }
+        if(FileHandler.fileExists("arm.txt")) {
+            double encoder = FileHandler.readValueFromFile("arm.txt");
+            FileHandler.deleteFile("arm.txt");
+            leftArm.set(-0.2);
+            rightArm.set(-0.2);
+            while(getArmEncoder()>encoder){
+                Log.d("Arm",String.format("Encoder: %f",getArmEncoder()));
+            }
+            resetEncodersArm();
+        }
+
 
     }
 
@@ -188,7 +211,10 @@ public class Arm extends SubsystemBase {
                 rightElevator.set(elevatorPower);
             }
 
-
+            if(isAutonomous){
+                FileHandler.writeValueToFile(getArmEncoder(),"arm.txt");
+                FileHandler.writeValueToFile(getElevatorEncoder(),"elevator.txt");
+            }
 
         //Log.d("Elevator",String.format("Out: %f",elevatorPower));
         // This method will be called once per scheduler run
