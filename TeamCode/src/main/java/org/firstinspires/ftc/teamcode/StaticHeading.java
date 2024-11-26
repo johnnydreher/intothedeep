@@ -26,7 +26,7 @@ public class StaticHeading extends LinearOpMode {
 
     public static double distance = 50;
     Drivetrain drivetrain = new Drivetrain();
-    Arm arm = new Arm();
+    Arm arm = new Arm(true);
     //AprilTag aprilTag = new AprilTag();
 
     @Override

@@ -40,6 +40,8 @@ public class Arm extends SubsystemBase {
     private double lastArmPosition = 0;
     private double lastElevatorPosition = 0;
     private boolean isAutonomous = false;
+    private double armEncoderInitial = 0;
+    private double elevatorEncoderInitial = 0;
 
 
     public Arm(boolean isAutonomous) {
@@ -74,47 +76,58 @@ public class Arm extends SubsystemBase {
         rightArm.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         resetEncodersArm();
         resetEncodersElevator();
-        if(FileHandler.fileExists("elevator.txt")) {
-            double encoder = FileHandler.readValueFromFile("elevator.txt");
-            FileHandler.deleteFile("elevator.txt");
-            leftElevator.set(-0.5);
-            rightElevator.set(-0.5);
-            while(getElevatorEncoder()>encoder){
-                Log.d("Elevator",String.format("Encoder: %f",getElevatorEncoder()));
+        armEncoderInitial = 0;
+        elevatorEncoderInitial = 0;
+        if(!isAutonomous) {
+            if (FileHandler.fileExists("elevator.txt")) {
+                double encoder = FileHandler.readValueFromFile("elevator.txt");
+                FileHandler.deleteFile("elevator.txt");
+                elevatorEncoderInitial = encoder;
+                resetEncodersElevator();
+                pidElevator.update(encoder,kPElevator,kIElevator,kDElevator);
             }
-           resetEncodersElevator();
-        }
-        if(FileHandler.fileExists("arm.txt")) {
-            double encoder = FileHandler.readValueFromFile("arm.txt");
-            FileHandler.deleteFile("arm.txt");
-            leftArm.set(-0.2);
-            rightArm.set(-0.2);
-            while(getArmEncoder()>encoder){
-                Log.d("Arm",String.format("Encoder: %f",getArmEncoder()));
-            }
-            resetEncodersArm();
-        }
+            if (FileHandler.fileExists("arm.txt")) {
+                double encoder = FileHandler.readValueFromFile("arm.txt");
+                FileHandler.deleteFile("arm.txt");
+                armEncoderInitial = encoder;
+                resetEncodersArm();
+                pidfArm.updateSetpoint(encoder, kPArm, kIArm, kDArm, kFArm);
 
+            }
+        }
 
     }
 
+    /*
     public void manualElevatorControl(double power) {
         if (power != 0) { // Controle manual ativado
             manualElevatorControl = true;
             leftElevator.set(power);
             rightElevator.set(power);
+        } else if (manualElevatorControl) { // Botão solto, volta ao PID
+            manualElevatorControl = false;
+            lastElevatorPosition = getElevatorEncoder(); // Salva posição atual
+            pidElevator.updateSetpoint(lastElevatorPosition, kPElevator, kIElevator, kDElevator, );
         }
     }
 
+     */
 
 
+/*
     public void manualArmControl(double power) {
         if (power != 0) { // Controle manual ativado
             manualArmControl = true;
             leftArm.set(power);
             rightArm.set(power);
+        } else if (manualArmControl) { // Botão solto, volta ao PID
+            manualArmControl = false;
+            lastArmPosition = getArmEncoder(); // Salva posição atual
+            pidfArm.updateSetpoint(lastArmPosition, kPArm, kIArm, kDArm, kFArm);
         }
     }
+
+ */
 
 
     public void stopManualMovement() {
@@ -132,7 +145,7 @@ public class Arm extends SubsystemBase {
 
     }
     public double getArmEncoder(){
-        return (leftArm.encoder.getPosition()+rightArm.encoder.getPosition())/2.0;
+        return ((leftArm.encoder.getPosition()+rightArm.encoder.getPosition())/2.0)+armEncoderInitial;
     }
     public void resetEncodersElevator(){
         leftElevator.encoder.reset();
@@ -140,7 +153,7 @@ public class Arm extends SubsystemBase {
 
     }
     public double getElevatorEncoder(){
-        return (leftElevator.encoder.getPosition()+rightElevator.encoder.getPosition())/2.0;
+        return ((leftElevator.encoder.getPosition()+rightElevator.encoder.getPosition())/2.0)+elevatorEncoderInitial;
     }
     public void setArm(double power) {
         if (power == 1) {

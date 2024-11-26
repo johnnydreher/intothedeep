@@ -37,7 +37,7 @@ public class MainAuto extends CommandOpMode
 
     Drivetrain drivetrain = new Drivetrain();
     Drive drive;
-    Arm arm = new Arm();
+    Arm arm = new Arm(true);
     Intake intake;
     @Override public void initialize()
     {

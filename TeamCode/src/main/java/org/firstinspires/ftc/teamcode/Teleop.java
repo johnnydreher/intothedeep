@@ -33,7 +33,7 @@ public class Teleop extends LinearOpMode
     @Override public void runOpMode()
     {
         // Initialize the drive hardware & Turn on telemetry
-        Arm arm = new Arm();
+        Arm arm = new Arm(false);
         arm.init(hardwareMap);
         Intake intake = new Intake(hardwareMap);
 
@@ -155,7 +155,6 @@ public class Teleop extends LinearOpMode
            }else{
                arm.manualArmControl(0);
            }
-
             */
 
 

@@ -37,7 +37,7 @@ public class CommandTeleop extends CommandOpMode
 
     Drivetrain drivetrain = new Drivetrain();
     Drive drive;
-    Arm arm = new Arm();
+    Arm arm = new Arm(false);
     Intake intake;
     @Override public void initialize()
     {
