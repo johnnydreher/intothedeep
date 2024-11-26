@@ -34,6 +34,13 @@ public class Arm extends SubsystemBase {
     private int targetPosition = 0;  // Posição alvo desejada
 
 
+    private boolean manualArmControl = false;
+    private boolean manualElevatorControl = false;
+    private double lastArmPosition = 0;
+    private double lastElevatorPosition = 0;
+
+
+
     public Arm() {
         pidfArm = new PIDFControl(0,kPArm,kIArm,kDArm,kFArm);
         pidElevator = new PIDControl(0,0.1,0,0);
@@ -67,6 +74,35 @@ public class Arm extends SubsystemBase {
         resetEncodersElevator();
 
     }
+
+    public void manualElevatorControl(double power) {
+        if (power != 0) { // Controle manual ativado
+            manualElevatorControl = true;
+            leftElevator.set(power);
+            rightElevator.set(power);
+        }
+    }
+
+
+
+    public void manualArmControl(double power) {
+        if (power != 0) { // Controle manual ativado
+            manualArmControl = true;
+            leftArm.set(power);
+            rightArm.set(power);
+        }
+    }
+
+
+    public void stopManualMovement() {
+        leftElevator.set(0);
+        rightElevator.set(0);
+        leftArm.set(0);
+        rightArm.set(0);
+    }
+
+
+
     public void resetEncodersArm(){
         leftArm.encoder.reset();
         rightArm.encoder.reset();
@@ -140,17 +176,19 @@ public class Arm extends SubsystemBase {
     }
     @Override
     public void periodic() {
+            if (!manualArmControl) { // PID do braço só funciona se o controle manual não estiver ativo
+                double armPower = pidfArm.get(getArmEncoder());
+                leftArm.set(armPower);
+                rightArm.set(armPower);
+            }
 
-        double armPower = pidfArm.get(getArmEncoder());
-        leftArm.set(armPower);
-        rightArm.set(armPower);
+            if (!manualElevatorControl) { // PID do elevador só funciona se o controle manual não estiver ativo
+                double elevatorPower = pidElevator.get(getElevatorEncoder());
+                leftElevator.set(elevatorPower);
+                rightElevator.set(elevatorPower);
+            }
 
-        //Log.d("arm",String.format("Out: %f",armPower));
 
-
-        double elevatorPower = pidElevator.get(getElevatorEncoder());
-        leftElevator.set(elevatorPower);
-        rightElevator.set(elevatorPower);
 
         //Log.d("Elevator",String.format("Out: %f",elevatorPower));
         // This method will be called once per scheduler run

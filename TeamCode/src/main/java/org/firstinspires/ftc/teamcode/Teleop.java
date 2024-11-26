@@ -81,13 +81,21 @@ public class Teleop extends LinearOpMode
             else if(color=="yellow"){
                 blinkin.setPiscaAmarelo();
                 gamepad1.setLedColor(1.0,1.0,0,60000);
-            } else if (alianca == "blue") {
+            } else if (alianca == "blue" ) {
                 blinkin.setAzul();
             } else if (alianca == "red") {
                 blinkin.setVermelho();
             }else{
                 blinkin.setApagado();
                 gamepad1.setLedColor(0,1.0,0,60000);
+            }
+
+            if(gamepad2.options){
+                arm.resetEncodersArm();
+            }
+
+            if(gamepad2.start){
+                arm.resetEncodersElevator();
             }
 
 
@@ -103,21 +111,26 @@ public class Teleop extends LinearOpMode
                intake.push();
            }
 
-           if(gamepad2.cross){
-               arm.setArm(-1);
-               arm.setElevatorZero();
-           } else if (gamepad2.circle) {
-               arm.setArm(-1);
-               arm.setElevator(-1);
-           }else if(gamepad2.triangle){
-               arm.setArm(1);
-               arm.setElevatorZero();
-           }else if(gamepad2.square){
-               arm.setArm(1);
-               arm.setElevator(1);
-           }
+            if (gamepad2.cross) {
+                if (arm.isElevatorDown()) {
+                    arm.setArm(-1);
+                    arm.setElevatorZero();
+                } else {
+                    arm.setElevatorZero();
+                }
+            } else if (gamepad2.circle) {
+                arm.setArm(-1);
+                arm.setElevator(-1);
+            } else if (gamepad2.triangle) {
+                arm.setArm(1);
+                arm.setElevatorZero();
+            } else if (gamepad2.square) {
+                arm.setArm(1);
+                arm.setElevator(1);
+            }
 
-           if(gamepad2.left_bumper){
+
+            if(gamepad2.left_bumper){
                intake.pull();
            }else if(gamepad2.right_bumper){
                intake.push();
@@ -131,14 +144,39 @@ public class Teleop extends LinearOpMode
                arm.setArmZero();
            }
 
-           if(gamepad2.ps){
-               blinkin.setRainbow();
+           /*
+           if(gamepad2.left_trigger > 0.5){
+               arm.manualElevatorControl(-0.5);
+           }else{
+               arm.manualElevatorControl(0);
            }
-           arm.periodic();
+           if(gamepad2.right_trigger > 0.5){
+               arm.manualArmControl(-0.3);
+           }else{
+               arm.manualArmControl(0);
+           }
+
+            */
+
+
+
+
+            arm.periodic();
            arm.updateTelemetry(telemetry);
            intake.updateTelemetry(telemetry);
            intake.periodic();
            telemetry.update();
+
+
+
+
+
+
+
+
+            if(gamepad2.ps){
+                blinkin.setRainbow();
+            }
 
         }
     }
