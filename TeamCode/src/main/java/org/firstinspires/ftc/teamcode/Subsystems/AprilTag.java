@@ -128,7 +128,7 @@ public class AprilTag {
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null) {
                 if (detection.id == tag) {
-                    return getPose(detection);
+                    return detection.ftcPose;
                 }
             }
         }
@@ -158,8 +158,9 @@ public class AprilTag {
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
+
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.rawPose != null) {
+            if (detection.metadata != null) {
 
                 AprilTagPoseFtc pose = getPose(detection);
 
