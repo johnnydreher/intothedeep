@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import android.util.Log;
+
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,7 +25,7 @@ public class Outtake extends CommandBase {
     }
     @Override
     public void execute() {
-        if(timer.milliseconds() > 500){
+        if(timer.milliseconds() > 500 && !isFinished){
             intake.push();
             isFinished = true;
         }
@@ -34,7 +36,7 @@ public class Outtake extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        // TODO: 19/11/2024 Adiconar controle por sensor
-        return timer.milliseconds()>1000;
+        return timer.milliseconds()>1500;
+
     }
 }

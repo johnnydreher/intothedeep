@@ -4,6 +4,8 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.util.Objects;
+
 public class Blinkin extends SubsystemBase {
     private Servo pwmServo;
 
@@ -42,5 +44,14 @@ public class Blinkin extends SubsystemBase {
     }
     public void setPiscaVermelho(){
         pwmServo.setPosition(piscaVermelho);
+    }
+    public void setAlianca(String alianca){
+        if(Objects.equals(alianca, "blue")){
+            setAzul();
+        }
+        if(Objects.equals(alianca, "ref")){
+            setVermelho();
+        }
+
     }
 }

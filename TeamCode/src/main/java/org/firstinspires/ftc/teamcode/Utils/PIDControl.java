@@ -57,8 +57,8 @@ public class PIDControl {
         return radians;
     }
     public boolean atSetpoint(){
-        double setPointMin = Math.abs(setPoint)*0.99;
-        double setPointMax = Math.abs(setPoint)*1.01;
+        double setPointMin = Math.abs(setPoint)*0.95;
+        double setPointMax = Math.abs(setPoint)*1.05;
         return (Math.abs(lastRead)>=setPointMin && Math.abs(lastRead)<=setPointMax);
     }
 }

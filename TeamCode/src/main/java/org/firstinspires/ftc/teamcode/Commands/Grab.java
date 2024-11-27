@@ -23,9 +23,9 @@ public class Grab extends CommandBase {
     }
     @Override
     public void execute() {
-        if(timer.milliseconds() > 500){
+        if(timer.milliseconds() > 500 && !isFinished){
             intake.pull();
-            //isFinished = true;
+            isFinished = true;
         }
     }
     @Override
@@ -34,7 +34,8 @@ public class Grab extends CommandBase {
     }
     @Override
     public boolean isFinished() {
+
         // TODO: 19/11/2024 Adicionar controle por sensor
-        return timer.milliseconds()>1000;
+         return timer.milliseconds()>1500;
     }
 }

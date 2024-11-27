@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
+import org.firstinspires.ftc.teamcode.Constants.PIDConstantsTurn;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 
@@ -11,17 +13,18 @@ public class TurnTo extends CommandBase {
     Drivetrain drive;
     PIDControl pid;
     double angle;
+    ElapsedTime to = new ElapsedTime();
     public TurnTo(double angle, Drivetrain drive){
         this.angle = angle;
         this.drive = drive;
         addRequirements(drive);
-        pid = new PIDControl(angle, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
         drive.resetEncoders();
+        pid = new PIDControl(angle, PIDConstantsTurn.Kp,PIDConstantsTurn.Ki, PIDConstantsTurn.Kd);
     }
 
     @Override
     public void initialize() {
-
+        to.reset();;
     }
     @Override
     public void execute() {
@@ -34,7 +37,7 @@ public class TurnTo extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return pid.atSetpoint();
+        return pid.atSetpoint() || to.milliseconds()>2500;
     }
 }
 

@@ -7,18 +7,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants.PIDConstants;
+import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.PIDControl;
 
-public class DriveTo extends CommandBase {
+public class DriveToWithArm extends CommandBase {
     private Drivetrain drive;
+    private Arm arm;
     private PIDControl pid, pidStrafe,pidYaw;
     private double distance;
     private ElapsedTime to = new ElapsedTime();
-    public DriveTo(double distance, Drivetrain drive){
+    public DriveToWithArm(double distance, Drivetrain drive, Arm arm){
         addRequirements(drive);
         this.distance = distance;
         this.drive = drive;
+        this.arm = arm;
         drive.resetEncoders();
         pid = new PIDControl(distance, PIDConstants.Kp,PIDConstants.Ki, PIDConstants.Kd);
         pidStrafe = new PIDControl(0,PIDConstants.Kp,0, 0);
@@ -27,7 +30,10 @@ public class DriveTo extends CommandBase {
     }
     @Override
     public void initialize() {
+
         to.reset();
+        arm.setArm(1);
+        arm.setElevator(1);
     }
     @Override
     public void execute() {
@@ -46,6 +52,6 @@ public class DriveTo extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return pid.atSetpoint() || to.milliseconds()>2500;
+        return (pid.atSetpoint() || to.milliseconds()>2500) && arm.isArmUp() && arm.isElevatorUp();
     }
 }

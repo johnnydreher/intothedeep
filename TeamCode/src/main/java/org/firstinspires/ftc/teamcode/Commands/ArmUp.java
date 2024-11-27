@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Commands;
 
+import android.util.Log;
+
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
@@ -11,6 +13,7 @@ public class ArmUp extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
         this.arm = arm;
         addRequirements(arm);
+        Log.d("AUTONOMO","Arm up Inicio");
     }
     @Override
     public void initialize() {
@@ -19,12 +22,8 @@ public class ArmUp extends CommandBase {
         arm.setElevator(1);
     }
     @Override
-    public void execute() {
-    }
-    @Override
-    public void end(boolean interrupted) {
-
-
+    public void end(boolean interrupted){
+        Log.d("AUTONOMO","Arm up Fim");
     }
     @Override
     public boolean isFinished() {

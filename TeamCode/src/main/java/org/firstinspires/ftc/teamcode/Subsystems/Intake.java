@@ -103,13 +103,13 @@ public class Intake extends SubsystemBase {
     }
 
     public void pull() {
-        intakeRight.setPower(-power);
-        intakeLeft.setPower(power);
+        intakeRight.setPower(power);
+        intakeLeft.setPower(-power);
     }
 
     public void push() {
-        intakeRight.setPower(power);
-        intakeLeft.setPower(-power);
+        intakeRight.setPower(-power);
+        intakeLeft.setPower(power);
     }
 
     public void powerOff() {
@@ -118,11 +118,15 @@ public class Intake extends SubsystemBase {
             intakeLeft.setPower(0);
         }
     }
+    public boolean hasElement(){
+        return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
+    }
 
     public void updateTelemetry(Telemetry telemetry) {
         String colorDetected = detectColor();
         telemetry.addData("Cor detectada", colorDetected);
         telemetry.addData("Distancia",colorSensor.getDistance(DistanceUnit.MM));
+        telemetry.addData("hasElement",hasElement());
     }
     public boolean elementPresent(){
         return colorSensor.getDistance(DistanceUnit.MM)<distanceToElement;
