@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Commands.DriveTo;
+import org.firstinspires.ftc.teamcode.Commands.DriveToTag;
 import org.firstinspires.ftc.teamcode.Commands.StrafeTo;
 import org.firstinspires.ftc.teamcode.Commands.TurnTo;
 import org.firstinspires.ftc.teamcode.Constants.DistanceConstant;
@@ -27,48 +28,38 @@ public class StaticHeading extends LinearOpMode {
     public static double distance = 50;
     Drivetrain drivetrain = new Drivetrain();
     Arm arm = new Arm(true);
-    //AprilTag aprilTag = new AprilTag();
+    AprilTag aprilTag = new AprilTag();
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,true);
         arm.init(hardwareMap);
-        //aprilTag.init(hardwareMap);
+        aprilTag.init(hardwareMap);
 
 
 
-        waitForStart();
-        if(DistanceConstant.distanceX!=0) {
-            DriveTo drive = new DriveTo(DistanceConstant.distanceX, drivetrain);
-            while (!drive.isFinished()) {
-                updateTelemetry("Driving");
-                drive.execute();
-            }
+        while (!isStarted()) {
+            aprilTag.telemetryAprilTag(telemetry);
+            telemetry.update();
         }
-        if(DistanceConstant.distanceY!=0) {
-            StrafeTo s = new StrafeTo(DistanceConstant.distanceY, drivetrain);
-            while (!s.isFinished()) {
-                updateTelemetry("Strafing");
-                s.execute();
-            }
-        }
-        if(DistanceConstant.angle!=0) {
-            TurnTo t = new TurnTo(DistanceConstant.angle, drivetrain);
-            while (!t.isFinished()) {
-                updateTelemetry("Turning");
-                t.execute();
-            }
-        }
+        DriveToTag dtt = new DriveToTag(drivetrain,aprilTag,1);
+        dtt.initialize();
+        while (!dtt.isFinished()){
+            dtt.execute();
+            aprilTag.telemetryAprilTag(telemetry);
+            updateTelemetry("DriveToTag");
 
+        }
         drivetrain.power(0);
         while(opModeIsActive()){
+            aprilTag.telemetryAprilTag(telemetry);
             updateTelemetry("End");
 
 
         }
         // Save more CPU resources when camera is no longer needed.
-        //aprilTag.close();
+        aprilTag.close();
     }
     private void updateTelemetry(String function){
         //aprilTag.telemetryAprilTag(telemetry);

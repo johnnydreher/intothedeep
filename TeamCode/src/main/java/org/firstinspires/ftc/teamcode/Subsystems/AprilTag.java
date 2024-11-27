@@ -3,27 +3,32 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
 import java.util.Locale;
-
+@Config
 public class AprilTag {
     // Create the AprilTag processor.
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    private static  final double cameraCorrection = 1.27;
+    private static double cameraCorrection = 1.085;
     /**
      * The variable to store our instance of the AprilTag processor.
      */
@@ -102,6 +107,51 @@ public class AprilTag {
         // Disable or re-enable the aprilTag processor at any time.
         visionPortal.setProcessorEnabled(aprilTag, true);
     }
+    private AprilTagPoseFtc getPose(AprilTagDetection detection){
+        Orientation rot = Orientation.getOrientation(detection.rawPose.R, AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
+
+        // Original source data
+        double x = detection.rawPose.x;
+        double y = detection.rawPose.y;
+        double z = detection.rawPose.z;
+
+        double yaw = rot.firstAngle;
+        double roll = rot.secondAngle;
+        double pitch = rot.thirdAngle;
+
+        return new AprilTagPoseFtc(x,y,z,yaw,pitch,roll,Math.hypot(x, y),
+                AngleUnit.DEGREES.fromUnit(AngleUnit.RADIANS, Math.atan2(-x, y)),
+                AngleUnit.DEGREES.fromUnit(AngleUnit.RADIANS, Math.atan2(z, y)));
+    }
+    private AprilTagPoseFtc getTag(int tag){
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                if (detection.id == tag) {
+                    return getPose(detection);
+                }
+            }
+        }
+        return null;
+    }
+    public double getRange(int tag){
+        AprilTagPoseFtc d = getTag(tag);
+        if(d!=null){
+            return d.range*DistanceUnit.mmPerInch*cameraCorrection;
+        }
+        return 0;
+    }
+    public double getYaw(int tag){
+        AprilTagPoseFtc d = getTag(tag);
+        if(d!=null){
+            return d.bearing;
+        }
+        return 0;
+    }
+    public boolean isTag(int tag){
+        AprilTagPoseFtc d = getTag(tag);
+        return d!=null;
+    }
     public void telemetryAprilTag(Telemetry telemetry) {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -109,11 +159,15 @@ public class AprilTag {
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format(Locale.getDefault(), "\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format(Locale.getDefault(), "XYZ %6.1f %6.1f %6.1f  (mm)", detection.ftcPose.x*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.y*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.z*DistanceUnit.mmPerInch*cameraCorrection));
-                telemetry.addLine(String.format(Locale.getDefault(), "PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format(Locale.getDefault(), "RBE %6.1f %6.1f %6.1f  (mm, deg, deg)", detection.ftcPose.range*DistanceUnit.mmPerInch*cameraCorrection, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            if (detection.rawPose != null) {
+
+                AprilTagPoseFtc pose = getPose(detection);
+
+
+                telemetry.addLine(String.format(Locale.getDefault(), "\n==== (ID %d)", detection.id));
+                telemetry.addLine(String.format(Locale.getDefault(), "XYZ %6.1f %6.1f %6.1f  (mm)", pose.x*DistanceUnit.mmPerInch*cameraCorrection, pose.y*DistanceUnit.mmPerInch*cameraCorrection, pose.z*DistanceUnit.mmPerInch*cameraCorrection));
+                telemetry.addLine(String.format(Locale.getDefault(), "PRY %6.1f %6.1f %6.1f  (deg)", pose.pitch, pose.roll, pose.yaw));
+                telemetry.addLine(String.format(Locale.getDefault(), "RBE %6.1f %6.1f %6.1f  (mm, deg, deg)", pose.range*DistanceUnit.mmPerInch*cameraCorrection, pose.bearing, pose.elevation));
             } else {
                 telemetry.addLine(String.format(Locale.getDefault(), "\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format(Locale.getDefault(), "Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));

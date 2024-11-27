@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Commands.Grab;
 import org.firstinspires.ftc.teamcode.Commands.Outtake;
 import org.firstinspires.ftc.teamcode.Commands.StrafeTo;
 import org.firstinspires.ftc.teamcode.Commands.TurnTo;
+import org.firstinspires.ftc.teamcode.Subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
@@ -21,12 +22,13 @@ public class Auto4Pieces extends SequentialCommandGroup {
     private final Drivetrain dt;
     private final Arm arm;
     private final Intake intake;
-
-    public Auto4Pieces(Drivetrain dt, Arm arm, Intake intake) {
+    private final AprilTag aprilTag;
+    public Auto4Pieces(Drivetrain dt, Arm arm, Intake intake, AprilTag aprilTag) {
         // Use addRequirements() here to declare subsystem dependencies.
         this.dt = dt;
         this.arm = arm;
         this.intake = intake;
+        this.aprilTag = aprilTag;
         addCommands(//new DriveTo(20,dt),
                     //new WaitCommand(200),
                     //new StrafeTo(-50,dt),

@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Commands.Autos.Auto4Pieces;
 import org.firstinspires.ftc.teamcode.Commands.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
@@ -39,18 +40,21 @@ public class MainAuto extends CommandOpMode
     Drive drive;
     Arm arm = new Arm(true);
     Intake intake;
+    AprilTag aprilTag = new AprilTag();
+
     @Override public void initialize()
     {
         // Initialize the drive hardware & Turn on telemetry
 
         arm.init(hardwareMap);
         intake = new Intake(hardwareMap);
+        aprilTag.init(hardwareMap);
 
         String aliance = "Vermelho";
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         drivetrain.init(hardwareMap,false);
         intake.setAlliance(aliance);
-        Auto4Pieces auto4Pieces = new Auto4Pieces(drivetrain, arm, intake);
+        Auto4Pieces auto4Pieces = new Auto4Pieces(drivetrain, arm, intake, aprilTag);
         while(opModeInInit()) {
             telemetry.addData("data", BuildConfig.APP_BUILD_TIME);
             telemetry.addData("Autonomo principal", " 4 peças");
