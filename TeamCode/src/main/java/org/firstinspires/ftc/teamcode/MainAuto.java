@@ -16,6 +16,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 
 import com.qualcomm.ftcrobotcontroller.BuildConfig;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -53,6 +54,7 @@ public class MainAuto extends CommandOpMode
     List<Command> auto4Pieces;
     int actualCommand = 0;
     Command cmd;
+    ElapsedTime timer = new ElapsedTime();
     @Override public void initialize()
     {
         // Initialize the drive hardware & Turn on telemetry
@@ -84,23 +86,26 @@ public class MainAuto extends CommandOpMode
         if(cmd == null){
             cmd = auto4Pieces.get(0);
             cmd.initialize();
+            timer.reset();
         }
-        cmd.execute();
-        if(cmd.isFinished()){
-            cmd.end(false);
-            actualCommand++;
-            cmd = auto4Pieces.get(actualCommand);
-            cmd.initialize();
+        if(timer.milliseconds()>=20) {
+            cmd.execute();
+            if (cmd.isFinished()) {
+                cmd.end(false);
+                actualCommand++;
+                cmd = auto4Pieces.get(actualCommand);
+                cmd.initialize();
+            }
+            //arm.updateTelemetry(telemetry);
+            //intake.updateTelemetry(telemetry);
+            drivetrain.periodic();
+            arm.periodic();
+            intake.periodic();
+            telemetry.addData("Command", cmd.getName());
+            telemetry.addData("X", drivetrain.getVertical());
+            telemetry.addData("Y", drivetrain.getHorizontal());
+            telemetry.addData("Angle", drivetrain.getHeading(AngleUnit.DEGREES));
+            telemetry.update();
         }
-        //arm.updateTelemetry(telemetry);
-        //intake.updateTelemetry(telemetry);
-        drivetrain.periodic();
-        arm.periodic();
-        intake.periodic();
-        telemetry.addData("Command",cmd.getName());
-        telemetry.addData("X",drivetrain.getVertical());
-        telemetry.addData("Y",drivetrain.getHorizontal());
-        telemetry.addData("Angle",drivetrain.getHeading(AngleUnit.DEGREES));
-        telemetry.update();
     }
 }

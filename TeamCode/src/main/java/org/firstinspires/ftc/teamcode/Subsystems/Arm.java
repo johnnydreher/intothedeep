@@ -173,10 +173,10 @@ public class Arm extends SubsystemBase {
         return getElevatorEncoder() < middleElevatorDown+250;
     }
     public boolean isArmUp(){
-        return getArmEncoder() > maxArmPosition-50;
+        return getArmEncoder() > maxArmPosition-200;
     }
     public boolean isElevatorUp(){
-        return getElevatorEncoder() > maxElevatorPosition-250;
+        return getElevatorEncoder() > maxElevatorPosition-500;
     }
     public void setPower(double power) {
         leftArm.set(power);
