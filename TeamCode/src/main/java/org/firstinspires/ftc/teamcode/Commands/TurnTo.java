@@ -37,7 +37,7 @@ public class TurnTo extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return pid.atSetpoint() || to.milliseconds()>750;
+        return pid.atSetpoint() || to.milliseconds()>4000;
     }
 }
 

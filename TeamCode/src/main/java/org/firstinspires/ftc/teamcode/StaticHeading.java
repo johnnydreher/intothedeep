@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Constants.DistanceConstant;
 import org.firstinspires.ftc.teamcode.Subsystems.AprilTag;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.opencv.core.Mat;
 
 @Config
 @Autonomous(name = "Static Heading")
@@ -43,13 +44,17 @@ public class StaticHeading extends LinearOpMode {
             aprilTag.telemetryAprilTag(telemetry);
             telemetry.update();
         }
-        DriveToTag dtt = new DriveToTag(drivetrain,aprilTag,1);
+        TurnTo dtt = new TurnTo(DistanceConstant.angle,drivetrain);
         dtt.initialize();
+        ElapsedTime to = new ElapsedTime();
+        to.reset();
         while (!dtt.isFinished()){
-            dtt.execute();
-            aprilTag.telemetryAprilTag(telemetry);
-            updateTelemetry("DriveToTag");
+            if(to.milliseconds()>20) {
+                to.reset();
 
+                dtt.execute();
+                updateTelemetry("DriveToTag");
+            }
         }
         drivetrain.power(0);
         while(opModeIsActive()){
